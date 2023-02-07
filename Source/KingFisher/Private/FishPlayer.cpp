@@ -5,13 +5,21 @@
 #include <Camera/CameraComponent.h>
 #include <MotionControllerComponent.h>
 #include <Components/SkeletalMeshComponent.h>
+#include "MoveComponent.h"
+#include "GrabComponent.h"
+#include "EnhancedInputComponent.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+#include <../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
+#include <../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h>
+#include "FisherHandAnim.h"
+#include "FIsherHandMesh.h"
+
 
 // Sets default values
 AFishPlayer::AFishPlayer()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 
 	camera=CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(RootComponent);
@@ -28,8 +36,9 @@ AFishPlayer::AFishPlayer()
 
 	leftController=CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftController"));
 	leftController->SetupAttachment(RootComponent);
-
-	leftHand=CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftHand"));
+	leftController->MotionSource = "Left";
+	
+	leftHand=CreateDefaultSubobject<UFisherHandMesh>(TEXT("LeftHand"));
 	leftHand->SetupAttachment(leftController);
 	leftHand->SetRelativeRotation(FRotator(-25, 180, 90));
 	leftHand->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -38,27 +47,41 @@ AFishPlayer::AFishPlayer()
 	if (templeft.Succeeded())
 	{
 		leftHand->SetSkeletalMesh(templeft.Object);
+		leftHand->mirror=true;
 	}
 
 	rightController=CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightController"));
 	rightController->SetupAttachment(RootComponent);
-
-	rightHand=CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RightHand"));
+	rightController->MotionSource = "Right";
+	
+	rightHand=CreateDefaultSubobject<UFisherHandMesh>(TEXT("RightHand"));
 	rightHand->SetupAttachment(rightController);
 	rightHand->SetRelativeRotation(FRotator(25, 0, 90));
 	rightHand->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempright(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'"));
-	if (tempright.Succeeded())
-	{
-		rightHand->SetSkeletalMesh(tempright.Object);
-	}
+	bUseControllerRotationPitch = true;
+
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	compMove=CreateDefaultSubobject<UMoveComponent>(TEXT("MoveComponent"));
+	compGrab=CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComponent"));
+
+	teleportTrace = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TeleportTrace"));
+	teleportTrace->SetupAttachment(rightHand);
 }
 
 // Called when the game starts or when spawned
 void AFishPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(trackOrigin.GetValue());
+
+	APlayerController* playercontroller = GetWorld()->GetFirstPlayerController();
+
+	UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playercontroller->GetLocalPlayer());
+
+	subSystem->AddMappingContext(myMapping, 0);
 	
 }
 
@@ -74,5 +97,8 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
+	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
+	compMove->SetupPlayerInputComponent(enhancedInputComponent);
+	compGrab->SetupPlayerInputComponent(enhancedInputComponent);
+}

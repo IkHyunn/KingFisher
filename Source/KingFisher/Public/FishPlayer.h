@@ -28,6 +28,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(EditAnywhere, Category = "VR_Settings | ModuleSetting")
+	TEnumAsByte<enum EHMDTrackingOrigin::Type> trackOrigin;
+
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* camera;
 
@@ -38,11 +41,29 @@ public:
 	class UMotionControllerComponent* leftController;
 
 	UPROPERTY(EditAnywhere)
-	class USkeletalMeshComponent* leftHand;
+	class UFisherHandMesh* leftHand;
 
 	UPROPERTY(EditAnywhere)
 	class UMotionControllerComponent* rightController;
 
 	UPROPERTY(EditAnywhere)
-	class USkeletalMeshComponent* rightHand;
+	class UFisherHandMesh* rightHand;
+
+	UPROPERTY(EditAnywhere)
+	class UInputMappingContext* myMapping;
+
+	UPROPERTY(EditAnywhere)
+	class UMoveComponent* compMove;
+
+	UPROPERTY(EditAnywhere)
+	class UGrabComponent* compGrab;
+
+	UPROPERTY(EditAnywhere)
+	TArray <class UInputAction*> leftInputs;
+
+	UPROPERTY(EditAnywhere)
+	TArray <class UInputAction*> rightInputs;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* teleportTrace;
 };

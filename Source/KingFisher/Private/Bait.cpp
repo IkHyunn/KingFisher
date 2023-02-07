@@ -1,0 +1,19 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Bait.h"
+#include <Components/SphereComponent.h>
+#include <Components/SkeletalMeshComponent.h>
+#include <Components/BoxComponent.h>
+
+ABait::ABait()
+{
+	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
+	SetRootComponent(compBox);
+	compBox->SetCollisionProfileName(TEXT("PickUp"));
+	compBox->SetSimulatePhysics(true);
+
+	baitMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Bait"));
+	baitMesh->SetupAttachment(compBox);
+	baitMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
