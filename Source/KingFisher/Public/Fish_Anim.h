@@ -34,8 +34,6 @@ public:
 	void OnEndEat();
 
 
-
-
 // 	UFUNCTION()
 // 	void AnimNofity_FishRoaming();
 // 

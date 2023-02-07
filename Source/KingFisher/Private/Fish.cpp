@@ -23,9 +23,12 @@ AFish::AFish()
 	}
 
 	// Mesh  위치 세팅
-	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	//GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	// Mesh  회전 세팅
-	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+	//GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+
+	//Mesh 크기 세팅
+	GetMesh()->SetWorldScale3D(FVector(10));
 
 
 	//2. 애니메이션 클래스 세팅
@@ -53,6 +56,7 @@ AFish::AFish()
 	{
 		arrayMesh.Add(tempMesh_1.Object);
 	}
+
 
 	// SkeletalMesh_2
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_2(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/barracuda_rig_exp20_SK.barracuda_rig_exp20_SK'"));

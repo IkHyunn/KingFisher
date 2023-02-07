@@ -168,7 +168,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 	void UFish_FSM::UpdateFastSwim()
 	{
-		ChangeState(EFishState::FastSwim);
+		//ChangeState(EFishState::FastSwim);
 	}
 
 	void UFish_FSM::UpdateEat()
@@ -224,22 +224,23 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		// 처음 위치로 가서 도착하면 Idle로 전환.
 		MoveToPos(originPos);
+	
+		//1. 나--> 처음 위치를 향하는 방향
+	 	FVector dir = originPos - me->GetActorLocation();
+	 	
+	 	//2. 만약 나---처음 위치까지 거리가 10보다 작으면
+	 	if (dir.Length() < 10 )
+	 		{
+	 			//3. Idle 상태로 전환
+	 			ChangeState(EFishState::SlowSwim);
+	 		}
+	 	//4. 그렇지 않으면
+	 	else
+	 		{
+	 			//5. 계속 1번에서 구한 방향으로 이동
+	 			me->AddMovementInput(dir.GetSafeNormal());
+	 		}
 	}
-	// 	1. 나--> 처음 위치를 향하는 방향
-	// 		FVector dir = originPos - me->GetActorLocation();
-	// 	
-	// 		//2. 만약 나---처음 위치까지 거리가 10보다 작으면
-	// 		if (dir.Length() < 10 )
-	// 		{
-	// 		//3. Idle 상태로 전환
-	// 			ChangeState(EEnemyState::Slowswim);
-	// 		}
-	// 		//4. 그렇지 않으면
-	// 		else
-	// 		{
-	// 		//5. 계속 1번에서 구한 방향으로 이동
-	// 			me->AddMovementInput(dir.GetSafeNormal());
-	// 		}
 
 	void UFish_FSM::ChangeState(EFishState state)
 	{
@@ -258,7 +259,6 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		switch(currState)
 		{
 			case EFishState::SlowSwim:
- 				
 				{
 					Navigation();
 				}
