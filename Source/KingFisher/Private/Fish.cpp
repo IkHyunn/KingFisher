@@ -22,13 +22,9 @@ AFish::AFish()
 		GetMesh()-> SetSkeletalMesh(tempMesh.Object);
 	}
 
-	// Mesh  위치 세팅
-	//GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
-	// Mesh  회전 세팅
-	//GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
-
 	//Mesh 크기 세팅
 	GetMesh()->SetWorldScale3D(FVector(10));
+
 
 
 	//2. 애니메이션 클래스 세팅
@@ -50,75 +46,6 @@ AFish::AFish()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
-	// SkeletalMesh_1
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_1(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/atlantic_cod_rig_exp20_SK.atlantic_cod_rig_exp20_SK'"));
-	if (tempMesh_1.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_1.Object);
-	}
-
-
-	// SkeletalMesh_2
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_2(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/barracuda_rig_exp20_SK.barracuda_rig_exp20_SK'"));
-	if (tempMesh_2.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_2.Object);
-	}
-
-	// SkeletalMesh_3
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_3(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/black_redeye_fish_rig_exp20_SK.black_redeye_fish_rig_exp20_SK'"));
-	if (tempMesh_3.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_3.Object);
-	}
-
-	// SkeletalMesh_4
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_4(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/black_spotted_grunt_rig_exp20_SK.black_spotted_grunt_rig_exp20_SK'"));
-	if (tempMesh_4.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_4.Object);
-	}
-
-	// SkeletalMesh_5
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_5(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/electric_catfish_rig_exp20_SK.electric_catfish_rig_exp20_SK'"));
-	{
-		arrayMesh.Add(tempMesh_5.Object);
-	}
-
-	// SkeletalMesh_6
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_6(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/carp_rig_exp20_SK.carp_rig_exp20_SK'"));
-	if (tempMesh_6.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_6.Object);
-	}
-
-	// SkeletalMesh_7
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_7(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/clownfish_rig_exp20_SK.clownfish_rig_exp20_SK'"));
-	if (tempMesh_7.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_7.Object);
-	}
-
-	// SkeletalMesh_8
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_8(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/discus_rig_exp20_SK.discus_rig_exp20_SK'"));
-	if (tempMesh_8.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_8.Object);
-	}
-
-	// SkeletalMesh_9
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_9(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/discus_v2_rig_exp20_SK.discus_v2_rig_exp20_SK'"));
-	if (tempMesh_9.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_9.Object);
-	}
-
-	// SkeletalMesh_10
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_10(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/discus_v3_rig_exp20_SK.discus_v3_rig_exp20_SK'"));
-	if (tempMesh_10.Succeeded())
-	{
-		arrayMesh.Add(tempMesh_10.Object);
-	}
 }
 
 
@@ -133,8 +60,9 @@ AFish::AFish()
 		//랜덤 SkeletalMesh 담은 함수 호출
 		RandMesh();
 
-		// 랜덤한 매쉬를 세팅한다.
+		// 랜덤한 매쉬를 세팅한다.*****
 		GetMesh()->SetSkeletalMesh(arrayMesh[Rand]);
+		
 	}
 
 
