@@ -5,12 +5,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Fish.h"
 #include "Fish_Anim.h"
-#include "FishBait.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
 #include "AIModule/Classes/AIController.h"
 #include "NavigationSystem/Public/NavigationSystem.h"
+#include "Bait.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -41,7 +41,7 @@ void UFish_FSM::BeginPlay()
 	Super::BeginPlay();
 
 		//타겟 찾기
-		target = Cast<AFishBait>(UGameplayStatics::GetActorOfClass(GetWorld(), AFishBait::StaticClass()));
+		target = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(), ABait::StaticClass()));
 		//나 찾기
 		me = Cast<AFish>(GetOwner());
 		//처음 위치

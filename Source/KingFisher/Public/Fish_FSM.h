@@ -49,7 +49,7 @@ public:
 
 	// Å¸°Ù(¹Ì³¢)
 	UPROPERTY (EditAnywhere, Category = FSM)
-	class AFishBait* target;
+	class ABait* target;
 
 	// ³ª (¹°°í±â)
 	UPROPERTY(EditAnywhere)

@@ -80,8 +80,7 @@ AFish::AFish()
 	}
 
 	// SkeletalMesh_5
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_5(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/butterfly_fish_rig_exp20_SK.butterfly_fish_rig_exp20_SK'"));
-	if (tempMesh_5.Succeeded())
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh_5(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/electric_catfish_rig_exp20_SK.electric_catfish_rig_exp20_SK'"));
 	{
 		arrayMesh.Add(tempMesh_5.Object);
 	}

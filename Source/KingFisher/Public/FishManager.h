@@ -25,11 +25,11 @@ public:
 
 	//  랜덤 시간 간격 최솟값
 	UPROPERTY (EditAnywhere, Category = SpawnSettings)
-	float minTime = 1;
+	float minTime = 5;
 
 	//  랜덤 시간 간격 최대값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-	float maxTime = 5;
+	float maxTime = 15;
 
 	//스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
