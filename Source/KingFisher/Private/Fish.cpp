@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Fish.h"
+#include "Components/SphereComponent.h"
 #include "Fish_Anim.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Fish_FSM.h"
 #include "Engine/SkeletalMesh.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 AFish::AFish()
@@ -14,13 +14,21 @@ AFish::AFish()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//0.Sphere 컴포넌트
+	sphereComp = CreateDefaultSubobject <USphereComponent> (TEXT("SPHERE"));
+	SetRootComponent(sphereComp);
+	sphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	sphereComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	sphereComp->SetGenerateOverlapEvents(true);
+	
+	
 
 	// 1. 기본 SkeletalMesh
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/arapaima_rig_exp20_SK.arapaima_rig_exp20_SK'"));
+	/*ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/arapaima_rig_exp20_SK.arapaima_rig_exp20_SK'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()-> SetSkeletalMesh(tempMesh.Object);
-	}
+	}*/
 
 	//Mesh 크기 세팅
 	GetMesh()->SetWorldScale3D(FVector(10));
@@ -28,11 +36,11 @@ AFish::AFish()
 
 
 	//2. 애니메이션 클래스 세팅
-	ConstructorHelpers::FClassFinder<UFish_Anim> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/BluePrints/Fish_Anim/ABP_Fish.ABP_Fish_C'"));
+	/*ConstructorHelpers::FClassFinder<UFish_Anim> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/BluePrints/Fish_Anim/ABP_Fish.ABP_Fish_C'"));
 	if (tempAnim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
-	}
+	}*/
 
 	//3. FSM 컴포넌트 추가
 	fsm = CreateDefaultSubobject<UFish_FSM>(TEXT("FSM"));
@@ -61,7 +69,24 @@ AFish::AFish()
 		RandMesh();
 
 		// 랜덤한 매쉬를 세팅한다.*****
-		GetMesh()->SetSkeletalMesh(arrayMesh[Rand]);
+		GetMesh()->SetSkeletalMesh(arrayMesh[1]);
+		//GetMesh()->SetAnimInstanceClass(FishAnimation[1]);
+
+		//
+		//sphereComp->OnComponentBeginOverlap,AddDynamic(this, &AFish::OnTouch);
+
+		//물고기 - 머터리얼 인스턴스 
+		fishMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+
+ 		//Outline - 머터리얼 인스턴스
+		outlineMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+ 
+ 		//Outline 색을 넣는다.
+		GetMesh()-> SetMaterial (0, outlineMat);
+
+		//FVector curLoc = GetMesh()->GetComponentLocation();
+		FVector curLoc = GetActorLocation();
+		UE_LOG(LogTemp, Warning, TEXT("%f, %f, %f"), curLoc.X, curLoc.Y, curLoc.Z);
 		
 	}
 
@@ -79,8 +104,6 @@ AFish::AFish()
 		{
 			// 충돌 비활성화
 			GetCapsuleComponent()->SetCollisionEnabled((ECollisionEnabled::NoCollision));
-			// 탄창에 날 다시 넣어라
-			//dieDelegate.ExecuteIfBound(this);    //this, 즉 나 자신을 넣어줌.
 		}
 
 		//  매쉬를 활성/ 비활성화
@@ -92,10 +115,10 @@ AFish::AFish()
 		// fsm  활성/ 비활성
 		fsm->SetActive(bActive);
 
-}
+	}
 
 
-// Called every frame
+	// Called every frame
 void AFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -114,6 +137,22 @@ void AFish::RandMesh()
 {
 	//Skeletal Mesh 랜덤 재생
 	Rand = FMath::RandRange(0, 9);
+
+}
+
+// void AFish::OnTouch(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+// {
+// 
+// 
+// }
+
+
+//Color off 함수
+void AFish::ColorOff()
+{
+	// fishMat을 켜준다.
+	GetMesh()->SetMaterial(0, fishMat);
+
 
 }
 

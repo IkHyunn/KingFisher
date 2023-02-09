@@ -44,17 +44,18 @@ void UFish_FSM::BeginPlay()
 	target = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(), ABait::StaticClass()));
 	//나 찾기
 	me = Cast<AFish>(GetOwner());
+
+	//초기 체력 세팅
+	currHP = maxHP;
+	
 	//처음 위치
 	originPos = me->GetActorLocation();
+
 	//animInstance 찾기
-	//anim = Cast<UFish_Anim>(me->GetMesh()->GetAnimInstance());
-	UAnimInstance* anim_temp = me->GetMesh()->GetAnimInstance();
+	anim = Cast<UFish_Anim>(me->GetMesh()->GetAnimInstance());
 
-	//ai = Cast<AAIController>(me->GetController());
-	AController* ai_temp = me->GetController();
-	//AAIController* test_ai = Cast<AAIController>(ai_temp);
-	ai = Cast<AAIController>(ai_temp);
-
+	//ai 변수에 controller 담기
+	ai = Cast<AAIController>(me->GetController());
 
 }
 
@@ -110,7 +111,7 @@ void UFish_FSM::UpdateSlowSwim()
 		if (bComplete == true)
 		{
 			// 현재 상태를 Swim 으로 한다.
-			ChangeState(EFishState::Swim);
+			ChangeState(EFishState::SlowSwim);
 		}
 	}
 }
@@ -174,9 +175,9 @@ void UFish_FSM::UpdateSwim()
 
 }
 void UFish_FSM::UpdateFastSwim()
-{
-	//ChangeState(EFishState::FastSwim);
-}
+	{
+		//ChangeState(EFishState::FastSwim);
+	}
 
 void UFish_FSM::UpdateEat()
 {
@@ -194,118 +195,18 @@ void UFish_FSM::UpdateEatDelay()
 		//anim->bEatPlay = true;
 
 		FVector dir = target->GetActorLocation() - me->GetActorLocation();
-		if (dir.Length() < feedRange)
-		{
-			// 미끼 범위안에 들면 천천히 다가온다.
-			ChangeState(EFishState::SlowSwim);
-		}
-		else
-		{
-			ChangeState(EFishState::Swim);
-		}
+			if (dir.Length() < feedRange)
+				{
+					// 미끼 범위안에 들면 천천히 다가온다.
+					ChangeState(EFishState::SlowSwim);
+				}
+			else
+				{
+					ChangeState(EFishState::Swim);
+				}
 	}
 }
 
-void UFish_FSM::UpdateDamaged()
-{
-	//delayTime이 지나면
-	if (IsWaitComplete(damageDelayTime))
-	{
-		ChangeState(EFishState::SlowSwim);
-	}
-}
-
-void UFish_FSM::UpdateDie()
-{
-	// 만약 bDieMove가  false라면 함수를 나가라
-
-	//  미끼를 물었을 떄 상태를  FastSwim으로 바꿔라
-	//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die1"));
-
-	// 미끼에서 제거되었을 떄 상태를 Idle로 바꿔라
-	//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die0"));
-
-}
-
-void UFish_FSM::UpdateReturnPos()
-{
-	// 처음 위치로 가서 도착하면 Idle로 전환.
-	MoveToPos(originPos);
-
-	//1. 나--> 처음 위치를 향하는 방향
-	FVector dir = originPos - me->GetActorLocation();
-
-	//2. 만약 나---처음 위치까지 거리가 10보다 작으면
-	if (dir.Length() < 10)
-	{
-		//3. Idle 상태로 전환
-		ChangeState(EFishState::SlowSwim);
-	}
-	//4. 그렇지 않으면
-	else
-	{
-		//5. 계속 1번에서 구한 방향으로 이동
-		me->AddMovementInput(dir.GetSafeNormal());
-	}
-}
-
-void UFish_FSM::ChangeState(EFishState state)
-{
-
-	//현재 상태 갱신
-	currState = state;
-	// 현재 시간 초기화
-	currTime = 0;
-	// anim 상태로 갱신
-	//anim->state = state;
-	// ai  움직임 멈추자
-	if (IsValid(ai))
-	{
-		ai->StopMovement();
-	}
-
-	//  상태에 따른 초기 설정
-	switch (currState)
-	{
-	case EFishState::SlowSwim:
-	{
-		Navigation();
-	}
-	break;
-
-	case EFishState::Swim:
-	{
-		Navigation();
-	}
-	break;
-
-	case EFishState::FastSwim:
-	{
-		Navigation();
-	}
-	break;
-
-	case EFishState::Eat:
-	{
-		// 미끼 먹을 때 (랜덤 재생)
-		int32 rand = FMath::RandRange(0, 1);
-		FString sectionName = FString::Printf(TEXT("Eat%d"), rand);
-		me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
-	}
-	break;
-
-	case EFishState::Die:
-	{
-		//충돌 안되게
-		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// 죽음 몽타주 (랜덤 재생)
-		int32 rand = FMath::RandRange(0, 1);
-		FString sectionName = FString::Printf(TEXT("Die%d"), rand);
-		me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
-	}
-	break;
-	}
-}
 
 void UFish_FSM::ReceiveBait()
 {
@@ -319,6 +220,113 @@ void UFish_FSM::ReceiveBait()
 		ChangeState(EFishState::Die);
 	}
 }
+
+void UFish_FSM::UpdateDamaged()
+{
+	//delayTime이 지나면
+	if (IsWaitComplete(damageDelayTime))
+	{
+		ChangeState(EFishState::SlowSwim);
+	}
+}
+
+
+void UFish_FSM::UpdateDie()
+{
+	// 만약 bDieMove가  false라면 함수를 나가라
+//  	if (bDieMove = false)
+//  		return;
+
+// 		else
+// 		{
+// 
+// 			// 물고기 mesh를 미끼 mesh에 붙인다.
+// 			
+// 			// 물고기 mesh를 미끼 mesh에 overlap 한다.
+// 			
+// 			
+// 			//  상태를  FastSwim으로 바꿔라
+// 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die1"));
+// 
+// 			// 미끼에서 제거되었을 떄 상태를 Idle로 바꿔라
+// 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die0"));
+// 
+//			//머터리얼 색을 꺼라
+			me->ColorOff();
+// 
+// 		}
+
+}
+
+void UFish_FSM::UpdateReturnPos()
+{
+	// 처음 위치로 가서 도착하면 Idle로 전환.
+	MoveToPos(originPos);
+
+}
+
+void UFish_FSM::ChangeState(EFishState state)
+{
+
+		//현재 상태 갱신
+		currState = state;
+
+		// 현재 시간 초기화
+		currTime = 0;
+
+		// anim 상태로 갱신
+		if(IsValid(anim))
+		{
+		anim->state = state;
+		}
+
+		// ai  움직임 멈추자
+		ai->StopMovement();
+
+
+		//  상태에 따른 초기 설정
+		switch (currState)
+		{
+		case EFishState::SlowSwim:
+			{
+				Navigation();
+			}
+			break;
+
+		case EFishState::Swim:
+		{
+			Navigation();
+		}
+		break;
+
+		case EFishState::FastSwim:
+			{
+				Navigation();
+			}
+			break;
+
+		case EFishState::Eat:
+			{
+				// 미끼 먹을 때 (랜덤 재생)
+				int32 rand = FMath::RandRange(0, 1);
+				FString sectionName = FString::Printf(TEXT("Eat%d"), rand);
+				me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
+			}
+			break;
+
+		case EFishState::Die:
+			{
+				//충돌 안되게
+				me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				// 죽음 몽타주 (랜덤 재생)
+				int32 rand = FMath::RandRange(0, 1);
+				FString sectionName = FString::Printf(TEXT("Die%d"), rand);
+				me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
+				break;
+			}
+		}
+	}
+
 
 
 bool UFish_FSM::IsWaitComplete(float delayTime)

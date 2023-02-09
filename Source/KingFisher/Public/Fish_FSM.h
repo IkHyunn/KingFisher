@@ -103,7 +103,7 @@ public:
  	UPROPERTY(EditAnywhere)
 	class AAIController* ai;
 
-	//죽었을 떄 내려가게 하는 변수
+	//죽었을 때 올라가게 하는 변수
 	//bool bDieMove = false;
 
 
