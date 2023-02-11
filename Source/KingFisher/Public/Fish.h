@@ -28,18 +28,15 @@ public:
 
 public:
 
-	//박스 컴포넌트
-	UPROPERTY (EditAnywhere)
-	class USphereComponent* sphereComp;
+	// 콜리전 박스 생성
+	UPROPERTY(EditAnywhere)
+	class UCapsuleComponent* capsuleComp;
 
 	// SkeletalMesh 랜덤으로 받기
 	UPROPERTY (EditDefaultsOnly, Category = Mesh)
 	TArray <class USkeletalMesh*> arrayMesh;
 
-	// 애니메이션 담을 배열
-// 	UPROPERTY (EditDefaultsOnly, Category = Animation)
-// 	TArray <class UFish_Anim*> arrayAnim;
-	
+	// 애니메이션 랜덤 배열
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	TArray<TSubclassOf<class UFish_Anim>> FishAnimation;
 
@@ -63,8 +60,6 @@ public:
 	// 죽었을 떄 호출되는 함수를 담는 변수****
 	//FFishDieDelegate dieDelegate;
 
-	//오버랩 됐을 때 실행되는 함수
-	void OnTouch (UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// 컬러
 	UPROPERTY (EditAnywhere)
@@ -88,4 +83,12 @@ public:
 	//아웃라인 머터리얼 인스턴스
 	UPROPERTY(EditAnywhere, Category = Material)
 	class UMaterialInstanceDynamic* outlineMat;
+
+	// 오버랩 되는 함수
+	UFUNCTION()
+	void Overlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// 충돌 범위
+	UPROPERTY(EditAnywhere)
+	float grapDistance = 1.0f;
 };

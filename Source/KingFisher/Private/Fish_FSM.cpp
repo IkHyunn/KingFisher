@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -11,6 +12,7 @@
 #include "AIModule/Classes/AIController.h"
 #include "NavigationSystem/Public/NavigationSystem.h"
 #include "Bait.h"
+#include "Kismet/GameplayStatics.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -32,6 +34,7 @@ UFish_FSM::UFish_FSM()
 	{
 		EatMontage = tempMontage.Object;
 	}
+
 }
 
 
@@ -47,9 +50,10 @@ void UFish_FSM::BeginPlay()
 
 	//초기 체력 세팅
 	currHP = maxHP;
-	
+
 	//처음 위치
 	originPos = me->GetActorLocation();
+
 
 	//animInstance 찾기
 	anim = Cast<UFish_Anim>(me->GetMesh()->GetAnimInstance());
@@ -96,6 +100,8 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 }
 
+
+
 void UFish_FSM::UpdateSlowSwim()
 {
 	//  미끼를 쫓아갈 수 있나
@@ -111,7 +117,7 @@ void UFish_FSM::UpdateSlowSwim()
 		if (bComplete == true)
 		{
 			// 현재 상태를 Swim 으로 한다.
-			ChangeState(EFishState::SlowSwim);
+			ChangeState(EFishState::Swim);
 		}
 	}
 }
@@ -137,32 +143,27 @@ void UFish_FSM::UpdateSwim()
 	//만약 미끼가 시야에 들어왔다면
 	else if (bTrace)
 	{
+		// 상태를 FastSwim 으로 변경
+		ChangeState(EFishState::FastSwim);
+
 		//만약 target과 나(물고기)의 거리가 먹을 수 있는 거리보다 작으면
-		if (dir.Length() < feedRange)
+		if (dir.Length() < eatableRange)
 		{
-			// 상태를  Eat 으로 변경
-			ChangeState(EFishState::FastSwim);
+			ChangeState(EFishState::Eat);
 
-			//먹을 수 있는 거리로 바뀌면, 상태를 eat으로 전환.
-			if (dir.Length() < eatableRange)
-			{
-				ChangeState(EFishState::Eat);
+			//먹는 상태 애니메이션 재생
+			anim->bEatPlay = true;
 
-				//먹는 상태 애니메이션 재생
-				//anim->bEatPlay = true;
+			//먹는 상태 전환 시, 대기 시간이 바로 끝나도록
+			currTime = EatDelayTime;
 
-				//먹는 상태 전환 시, 대기 시간이 바로 끝나도록
-				currTime = EatDelayTime;
-			}
 		}
 		//그렇지 않으면
 		else
 		{
 			// ai 이용해서 목적지까지 
-			if (IsValid(ai))
-			{
-				ai->MoveToLocation(target->GetActorLocation());
-			}
+			ai->MoveToLocation(target->GetActorLocation());
+
 		}
 	}
 
@@ -174,15 +175,28 @@ void UFish_FSM::UpdateSwim()
 	}
 
 }
+
+
+
 void UFish_FSM::UpdateFastSwim()
-	{
-		//ChangeState(EFishState::FastSwim);
-	}
+{
+	// 이동
+	//ai->MoveToLocation(target->GetActorLocation(), -1, false);
+	me->SetActorLocation(target->GetActorLocation());
+
+	//몽타주 재생
+	//PlayAnimMontage(damageMontage, 1.0f, TEXT("Die"));
+
+
+
+}
+
 
 void UFish_FSM::UpdateEat()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EAT!"));
 	ChangeState(EFishState::EatDelay);
+	ReceiveBait();
 }
 
 
@@ -192,24 +206,40 @@ void UFish_FSM::UpdateEatDelay()
 	if (currTime > EatDelayTime)
 	{
 		currTime = 0;
-		//anim->bEatPlay = true;
+		anim->bEatPlay = true;
 
 		FVector dir = target->GetActorLocation() - me->GetActorLocation();
-			if (dir.Length() < feedRange)
-				{
-					// 미끼 범위안에 들면 천천히 다가온다.
-					ChangeState(EFishState::SlowSwim);
-				}
-			else
-				{
-					ChangeState(EFishState::Swim);
-				}
+		if (dir.Length() < eatableRange)
+		{
+			bBite = true;
+
+			if (bBite)
+			{
+				// 미끼 범위안에 들면 천천히 다가온다.
+				ChangeState(EFishState::Eat);
+
+			}
+		}
+		else
+		{
+			if (bBite == false)
+			{
+				//뒤로 간다.--> 뒤로 가는 함수 하나 더 만들어야 할 것 같음******
+				ChangeState(EFishState::Swim);
+
+			}
+		}
 	}
 }
 
 
 void UFish_FSM::ReceiveBait()
 {
+
+	//UE_LOG(LogTemp, Warning, TEXT("RECEIVE BAIT!!!"));\
+
+	//먹는 애니메이션 재생한다.
+
 	currHP--;
 	if (currHP > 0)
 	{
@@ -223,28 +253,49 @@ void UFish_FSM::ReceiveBait()
 
 void UFish_FSM::UpdateDamaged()
 {
-	//delayTime이 지나면
-	if (IsWaitComplete(damageDelayTime))
+	//뒤로 움직여 준다.
+	if (bBite)
 	{
-		ChangeState(EFishState::SlowSwim);
+		ChangeState(EFishState::EatDelay);
+	}
+	else
+	{
+		//delayTime이 지나면
+		if (IsWaitComplete(damageDelayTime))
+		{
+			ChangeState(EFishState::SlowSwim);
+
+		}
 	}
 }
 
 
 void UFish_FSM::UpdateDie()
 {
+
+    ABait* DieDest = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(),ABait::StaticClass()));
+	//물고기를 미끼에 붙인다.
+	if (IsValid(DieDest))
+	{
+	UE_LOG(LogTemp,Warning,TEXT("Isvalid"));
+		me->AttachToComponent(DieDest->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
+		// me->SetActorLocation(DieDest->GetActorLocation());
+		
+	}
+	else
+	{
+		
+	UE_LOG(LogTemp,Error,TEXT("!!!Isvalid"));
+	}
+
+
+
 	// 만약 bDieMove가  false라면 함수를 나가라
 //  	if (bDieMove = false)
 //  		return;
 
 // 		else
-// 		{
-// 
-// 			// 물고기 mesh를 미끼 mesh에 붙인다.
-// 			
-// 			// 물고기 mesh를 미끼 mesh에 overlap 한다.
-// 			
-// 			
+// 		{	
 // 			//  상태를  FastSwim으로 바꿔라
 // 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die1"));
 // 
@@ -252,81 +303,11 @@ void UFish_FSM::UpdateDie()
 // 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die0"));
 // 
 //			//머터리얼 색을 꺼라
-			me->ColorOff();
+			//me->ColorOff();
 // 
 // 		}
 
 }
-
-void UFish_FSM::UpdateReturnPos()
-{
-	// 처음 위치로 가서 도착하면 Idle로 전환.
-	MoveToPos(originPos);
-
-}
-
-void UFish_FSM::ChangeState(EFishState state)
-{
-
-		//현재 상태 갱신
-		currState = state;
-
-		// 현재 시간 초기화
-		currTime = 0;
-
-		// anim 상태로 갱신
-		if(IsValid(anim))
-		{
-		anim->state = state;
-		}
-
-		// ai  움직임 멈추자
-		ai->StopMovement();
-
-
-		//  상태에 따른 초기 설정
-		switch (currState)
-		{
-		case EFishState::SlowSwim:
-			{
-				Navigation();
-			}
-			break;
-
-		case EFishState::Swim:
-		{
-			Navigation();
-		}
-		break;
-
-		case EFishState::FastSwim:
-			{
-				Navigation();
-			}
-			break;
-
-		case EFishState::Eat:
-			{
-				// 미끼 먹을 때 (랜덤 재생)
-				int32 rand = FMath::RandRange(0, 1);
-				FString sectionName = FString::Printf(TEXT("Eat%d"), rand);
-				me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
-			}
-			break;
-
-		case EFishState::Die:
-			{
-				//충돌 안되게
-				me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				// 죽음 몽타주 (랜덤 재생)
-				int32 rand = FMath::RandRange(0, 1);
-				FString sectionName = FString::Printf(TEXT("Die%d"), rand);
-				me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
-				break;
-			}
-		}
-	}
-
 
 
 bool UFish_FSM::IsWaitComplete(float delayTime)
@@ -357,22 +338,21 @@ bool UFish_FSM::IsTargetTrace()
 	float angle = UKismetMathLibrary::DegAcos(dotValue);
 
 
-	if (angle < 40 && dirP.Length() < traceRange)
+	// 		//DrawDebugLine(GetWorld(), me->GetActorLocation(), target->GetActorLocation(), FColor::Red, false, 2.0f, 0, 2);
+
+
+		//방법 2- Sweep 방식
+	if (angle < 20 && dirP.Length() < traceRange)
 	{
-		//LineTrace
+
+		FVector center = me->GetMesh()->GetComponentLocation();
 		FHitResult hitInfo;
-		FCollisionQueryParams param;
-		param.AddIgnoredActor(me);
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(me);
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(
-			hitInfo,
-			me->GetActorLocation(),
-			target->GetActorLocation(),
-			ECollisionChannel::ECC_Visibility,
-			param);
 
-		// 만약 부딪힌 곳 있다면
-		if (bHit)
+		if (GetWorld()->SweepSingleByProfile(hitInfo, center, center, FQuat::Identity, TEXT("DETECT"),
+			FCollisionShape::MakeSphere(detectRange), params))
 		{
 			if (hitInfo.GetActor()->GetName().Contains(TEXT("Bait")))
 			{
@@ -383,6 +363,8 @@ bool UFish_FSM::IsTargetTrace()
 	}
 	// 그렇지 않으면 false로 전환
 	return false;
+
+
 }
 
 
@@ -403,6 +385,14 @@ void UFish_FSM::MoveToPos(FVector pos)
 	}
 }
 
+void UFish_FSM::UpdateReturnPos()
+{
+	// 처음 위치로 가서 도착하면 Idle로 전환.
+	MoveToPos(originPos);
+
+}
+
+
 void UFish_FSM::Navigation()
 {
 	UNavigationSystemV1* ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
@@ -410,4 +400,67 @@ void UFish_FSM::Navigation()
 	FNavLocation loc;
 	ns->GetRandomReachablePointInRadius(originPos, 1000, loc);
 	randPos = loc.Location;
+}
+
+
+void UFish_FSM::ChangeState(EFishState state)
+{
+
+	//현재 상태 갱신
+	currState = state;
+
+	// 현재 시간 초기화
+	currTime = 0;
+
+	// anim 상태로 갱신
+	if (IsValid(anim))
+	{
+		anim->state = state;
+	}
+
+	// ai  움직임 멈추자
+	ai->StopMovement();
+
+
+	//  상태에 따른 초기 설정
+	switch (currState)
+	{
+	case EFishState::SlowSwim:
+	{
+		Navigation();
+	}
+	break;
+
+	case EFishState::Swim:
+	{
+		Navigation();
+	}
+	break;
+
+	case EFishState::FastSwim:
+	{
+		Navigation();
+	}
+	break;
+
+	case EFishState::Eat:
+	{
+		// 미끼 먹을 때 (랜덤 재생)
+		int32 rand = FMath::RandRange(0, 1);
+		FString sectionName = FString::Printf(TEXT("Eat%d"), rand);
+		me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
+	}
+	break;
+
+	case EFishState::Die:
+	{
+		//충돌 안되게
+		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// 죽음 몽타주 (랜덤 재생)
+		int32 rand = FMath::RandRange(0, 1);
+		FString sectionName = FString::Printf(TEXT("Die%d"), rand);
+		me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
+		break;
+	}
+	}
 }

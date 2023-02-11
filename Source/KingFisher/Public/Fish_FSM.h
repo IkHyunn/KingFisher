@@ -81,30 +81,35 @@ public:
 	FVector randPos;
 
 	// 이동반경
-	float moveRange = 2000.0f;
-
-	// 미끼에게 다가가는 반경
-	float feedRange = 100.0f;
+	float moveRange = 1000.0f;
 
 	// 미끼를 먹을 수 있는 반경
-	float eatableRange = 10.0f;
+	float eatableRange = 2.0f;
 
 	// 쫓아갈 수 있는 범위 
-	float traceRange = 1000.0f;
+	float traceRange = 500.0f;
 
 	// 먹는 대기 시간
 	UPROPERTY(EditAnywhere, Category = FSM)
-	float EatDelayTime = 1.5f;
+	float EatDelayTime = 3.0f;
 
 	// 피격 대기 시간
-	float damageDelayTime = 2.0f;
+	float damageDelayTime = 3.0f;
 
 	// ai 담을 변수
  	UPROPERTY(EditAnywhere)
 	class AAIController* ai;
 
+	// 미끼 담을 변수
+	UPROPERTY(EditAnywhere)
+	class ABait* bait;
+
 	//죽었을 때 올라가게 하는 변수
 	//bool bDieMove = false;
+
+	// 감지 범위 
+	float detectRange = 300.0f;
+
 
 
 	// 현재 체력
@@ -130,6 +135,8 @@ public:
 	// 죽음
 	void UpdateDie();
 
+	bool bBite = false;
+
 
 
 	// 리턴상태
@@ -152,4 +159,6 @@ public:
 
 	 // 네비게이션 함수
 	 void Navigation();
+
+	 
 };

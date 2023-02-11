@@ -22,5 +22,8 @@ public:
 	class UBoxComponent* compBox;
 
 	UPROPERTY(EditAnywhere)
+	class UCapsuleComponent* BaitCollision;
+
+	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* baitMesh;
 };

@@ -1,3 +1,5 @@
+
+
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Fish.h"
 #include "Components/SphereComponent.h"
@@ -7,40 +9,45 @@
 #include "Fish_FSM.h"
 #include "Engine/SkeletalMesh.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/CapsuleComponent.h"
+#include "Bait.h"
 
 // Sets default values
 AFish::AFish()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 
-	//0.Sphere 컴포넌트
-	sphereComp = CreateDefaultSubobject <USphereComponent> (TEXT("SPHERE"));
-	SetRootComponent(sphereComp);
-	sphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
-	sphereComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-	sphereComp->SetGenerateOverlapEvents(true);
+	// 0. 소켓 생성
 	
-	
+		capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MOUTH"));
+		capsuleComp->SetCapsuleRadius(5);
+		capsuleComp->SetupAttachment(RootComponent);
+		//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
+// 		capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+// 		capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+// 		capsuleComp->SetGenerateOverlapEvents(true);
+
+
 
 	// 1. 기본 SkeletalMesh
-	/*ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/arapaima_rig_exp20_SK.arapaima_rig_exp20_SK'"));
-	if (tempMesh.Succeeded())
-	{
-		GetMesh()-> SetSkeletalMesh(tempMesh.Object);
-	}*/
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/arapaima_rig_exp20_SK.arapaima_rig_exp20_SK'"));
+ 	if (tempMesh.Succeeded())
+ 	{
+ 		GetMesh()-> SetSkeletalMesh(tempMesh.Object);
+ 	}
 
 	//Mesh 크기 세팅
-	GetMesh()->SetWorldScale3D(FVector(10));
-
+	GetMesh()->SetRelativeScale3D(FVector(8));
 
 
 	//2. 애니메이션 클래스 세팅
-	/*ConstructorHelpers::FClassFinder<UFish_Anim> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/BluePrints/Fish_Anim/ABP_Fish.ABP_Fish_C'"));
+	ConstructorHelpers::FClassFinder<UFish_Anim> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/BluePrints/Fish_Anim/ABP_Fish.ABP_Fish_C'"));
 	if (tempAnim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
-	}*/
+	}
 
 	//3. FSM 컴포넌트 추가
 	fsm = CreateDefaultSubobject<UFish_FSM>(TEXT("FSM"));
@@ -68,12 +75,19 @@ AFish::AFish()
 		//랜덤 SkeletalMesh 담은 함수 호출
 		RandMesh();
 
-		// 랜덤한 매쉬를 세팅한다.*****
-		GetMesh()->SetSkeletalMesh(arrayMesh[1]);
-		//GetMesh()->SetAnimInstanceClass(FishAnimation[1]);
+		//바뀔 때 순서
+		GetMesh()->SetSkeletalMesh(nullptr);
+		GetMesh()->SetAnimInstanceClass(nullptr);
 
-		//
-		//sphereComp->OnComponentBeginOverlap,AddDynamic(this, &AFish::OnTouch);
+		// 랜덤한 매쉬를 세팅
+		GetMesh()->SetSkeletalMesh(arrayMesh[Rand]);
+
+		// 랜덤한 애니메이션 세팅
+		GetMesh()->SetAnimInstanceClass(FishAnimation[Rand]);
+
+		// CapsuleComp에 overlap 되었을 때
+		capsuleComp->OnComponentBeginOverlap.AddDynamic(this, &AFish::Overlap);
+
 
 		//물고기 - 머터리얼 인스턴스 
 		fishMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
@@ -83,10 +97,6 @@ AFish::AFish()
  
  		//Outline 색을 넣는다.
 		GetMesh()-> SetMaterial (0, outlineMat);
-
-		//FVector curLoc = GetMesh()->GetComponentLocation();
-		FVector curLoc = GetActorLocation();
-		UE_LOG(LogTemp, Warning, TEXT("%f, %f, %f"), curLoc.X, curLoc.Y, curLoc.Z);
 		
 	}
 
@@ -99,7 +109,6 @@ AFish::AFish()
 			// 생성위치 재설정
 			fsm->originPos = GetActorLocation();
 		}
-		
 		else
 		{
 			// 충돌 비활성화
@@ -140,20 +149,26 @@ void AFish::RandMesh()
 
 }
 
-// void AFish::OnTouch(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-// {
-// 
-// 
-// }
-
-
 //Color off 함수
 void AFish::ColorOff()
 {
 	// fishMat을 켜준다.
 	GetMesh()->SetMaterial(0, fishMat);
 
-
 }
 
 
+void AFish::Overlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	if (OtherActor != nullptr)
+	{
+		ABait* fishBait = Cast<ABait>(OtherActor);
+
+		if (IsValid(fishBait))
+		{
+			fsm->ReceiveBait();
+		}	
+	}
+	
+}
