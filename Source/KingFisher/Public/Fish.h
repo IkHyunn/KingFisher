@@ -60,29 +60,26 @@ public:
 	// 죽었을 떄 호출되는 함수를 담는 변수****
 	//FFishDieDelegate dieDelegate;
 
-
 	// 컬러
 	UPROPERTY (EditAnywhere)
 	FLinearColor Fishcolor;
 
 	// 밝기 세기
 	UPROPERTY(EditAnywhere)
-	float glowPower;
+	float Power=1000;
 
 	// 컬러 꺼질 때
 	void ColorOff();
 
-	//물고기 머터리얼
-// 	UPROPERTY(EditAnywhere, Category = Material)
-// 	TArray<TSubclassOf<class UMaterialInstanceDynamic>> fishMat;
-
+	
 	// 물고기 머터리얼 
- 	UPROPERTY (EditAnywhere, Category = Material)
- 	class UMaterialInstanceDynamic* fishMat;
+  	UPROPERTY (EditAnywhere, Category = Material)
+  	TArray<class UMaterialInstance*> fishMat;
 
 	//아웃라인 머터리얼 인스턴스
 	UPROPERTY(EditAnywhere, Category = Material)
-	class UMaterialInstanceDynamic* outlineMat;
+ 	class UMaterialInstance* outlineMat;
+
 
 	// 오버랩 되는 함수
 	UFUNCTION()
@@ -91,4 +88,5 @@ public:
 	// 충돌 범위
 	UPROPERTY(EditAnywhere)
 	float grapDistance = 1.0f;
+
 };

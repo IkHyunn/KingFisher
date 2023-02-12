@@ -110,14 +110,14 @@ public:
 	// 감지 범위 
 	float detectRange = 300.0f;
 
-
-
 	// 현재 체력
 	UPROPERTY (EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-	float currHP;
+	float currHP = 0;
 	// 최대 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-	float maxHP = 3;
+	float maxHP = 1;
+
+	bool bBite = false;
 
 
 	// 느린헤엄 (대기)
@@ -132,11 +132,9 @@ public:
 	void UpdateEatDelay();
 	// 미끼에 걸린
 	void UpdateDamaged();
+
 	// 죽음
 	void UpdateDie();
-
-	bool bBite = false;
-
 
 
 	// 리턴상태

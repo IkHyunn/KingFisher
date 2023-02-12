@@ -11,6 +11,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/CapsuleComponent.h"
 #include "Bait.h"
+#include "Materials//MaterialInterface.h"
 
 // Sets default values
 AFish::AFish()
@@ -20,14 +21,13 @@ AFish::AFish()
 	
 
 	// 0. 소켓 생성
-	
-		capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MOUTH"));
-		capsuleComp->SetCapsuleRadius(5);
-		capsuleComp->SetupAttachment(RootComponent);
-		//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
-// 		capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
-// 		capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-// 		capsuleComp->SetGenerateOverlapEvents(true);
+	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MOUTH"));
+	capsuleComp->SetCapsuleRadius(5);
+	capsuleComp->SetupAttachment(RootComponent);
+	//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
+// 	capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+// 	capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+// 	capsuleComp->SetGenerateOverlapEvents(true);
 
 
 
@@ -88,16 +88,10 @@ AFish::AFish()
 		// CapsuleComp에 overlap 되었을 때
 		capsuleComp->OnComponentBeginOverlap.AddDynamic(this, &AFish::Overlap);
 
-
-		//물고기 - 머터리얼 인스턴스 
-		fishMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-
- 		//Outline - 머터리얼 인스턴스
+		//Outline - 머터리얼 인스턴스
 		outlineMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
- 
- 		//Outline 색을 넣는다.
-		GetMesh()-> SetMaterial (0, outlineMat);
-		
+
+
 	}
 
 
@@ -132,6 +126,7 @@ void AFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
 }
 
 // Called to bind functionality to input
@@ -147,14 +142,17 @@ void AFish::RandMesh()
 	//Skeletal Mesh 랜덤 재생
 	Rand = FMath::RandRange(0, 9);
 
+	//Outline 색을 넣는다.
+	GetMesh()->SetMaterial(0, outlineMat);
+
 }
 
 //Color off 함수
 void AFish::ColorOff()
 {
 	// fishMat을 켜준다.
-	GetMesh()->SetMaterial(0, fishMat);
-
+	GetMesh()->SetMaterial(0, fishMat[Rand]);
+	
 }
 
 
@@ -167,8 +165,9 @@ void AFish::Overlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
 
 		if (IsValid(fishBait))
 		{
-			fsm->ReceiveBait();
+			fsm->UpdateEat();
 		}	
-	}
-	
+	}	
 }
+
+

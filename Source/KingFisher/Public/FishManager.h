@@ -43,6 +43,8 @@ public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
 
+	int32 SpawnCount = 0;
+
 	// 물고기 생성 함수
 	void CreateFish();
 

@@ -25,11 +25,11 @@ UFish_FSM::UFish_FSM()
 	PrimaryComponentTick.bCanEverTick = true;
 
 
-	//  SetActive (true/false) 작동되게 하자.
+	// SetActive (true/false) 작동되게 하자.
 	bAutoActivate = true;
 
-	// 몽타주 
-	ConstructorHelpers::FObjectFinder<UAnimMontage> tempMontage(TEXT("/Script/Engine.AnimMontage'/Game/BluePrints/Fish_Anim/AMT_arapaima.AMT_arapaima'"));
+	// 몽타주   (애니메이션 몽타주는 또 어떻게 돌리지...?)
+	ConstructorHelpers::FObjectFinder<UAnimMontage> tempMontage(TEXT("/Script/Engine.AnimMontage'/Game/BluePrints/Fish_Anim/Retargeted_Anim/Retargeted_AMT/IKG_arapaimaAMT_arapaima.IKG_arapaimaAMT_arapaima'"));
 	if (tempMontage.Succeeded())
 	{
 		EatMontage = tempMontage.Object;
@@ -53,7 +53,6 @@ void UFish_FSM::BeginPlay()
 
 	//처음 위치
 	originPos = me->GetActorLocation();
-
 
 	//animInstance 찾기
 	anim = Cast<UFish_Anim>(me->GetMesh()->GetAnimInstance());
@@ -184,17 +183,11 @@ void UFish_FSM::UpdateFastSwim()
 	//ai->MoveToLocation(target->GetActorLocation(), -1, false);
 	me->SetActorLocation(target->GetActorLocation());
 
-	//몽타주 재생
-	//PlayAnimMontage(damageMontage, 1.0f, TEXT("Die"));
-
-
-
 }
 
 
 void UFish_FSM::UpdateEat()
 {
-	UE_LOG(LogTemp, Warning, TEXT("EAT!"));
 	ChangeState(EFishState::EatDelay);
 	ReceiveBait();
 }
@@ -236,7 +229,7 @@ void UFish_FSM::UpdateEatDelay()
 void UFish_FSM::ReceiveBait()
 {
 
-	//UE_LOG(LogTemp, Warning, TEXT("RECEIVE BAIT!!!"));\
+	//UE_LOG(LogTemp, Warning, TEXT("RECEIVE BAIT!!!"));
 
 	//먹는 애니메이션 재생한다.
 
@@ -272,40 +265,18 @@ void UFish_FSM::UpdateDamaged()
 
 void UFish_FSM::UpdateDie()
 {
-
-    ABait* DieDest = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(),ABait::StaticClass()));
 	//물고기를 미끼에 붙인다.
+    ABait* DieDest = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(),ABait::StaticClass()));
+	
 	if (IsValid(DieDest))
 	{
-	UE_LOG(LogTemp,Warning,TEXT("Isvalid"));
-		me->AttachToComponent(DieDest->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
-		// me->SetActorLocation(DieDest->GetActorLocation());
-		
+	
+	me->AttachToComponent(DieDest->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
+	// me->SetActorLocation(DieDest->GetActorLocation());
 	}
-	else
-	{
-		
-	UE_LOG(LogTemp,Error,TEXT("!!!Isvalid"));
-	}
-
-
-
-	// 만약 bDieMove가  false라면 함수를 나가라
-//  	if (bDieMove = false)
-//  		return;
-
-// 		else
-// 		{	
-// 			//  상태를  FastSwim으로 바꿔라
-// 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die1"));
-// 
-// 			// 미끼에서 제거되었을 떄 상태를 Idle로 바꿔라
-// 			//me->PlayAnimMontage(EatMontage, 1.0f, FName("Die0"));
-// 
-//			//머터리얼 색을 꺼라
-			//me->ColorOff();
-// 
-// 		}
+	
+	//머터리얼 색을 꺼라
+	me->ColorOff();
 
 }
 
@@ -326,6 +297,8 @@ bool UFish_FSM::IsWaitComplete(float delayTime)
 }
 
 
+
+
 bool UFish_FSM::IsTargetTrace()
 {
 	//물고기->미끼 향하는 벡터
@@ -334,14 +307,12 @@ bool UFish_FSM::IsTargetTrace()
 	//2. 나의 앞방향과 1번에 구한 벡터의 내적
 	float dotValue = FVector::DotProduct(me->GetActorForwardVector(), dirP.GetSafeNormal());
 
+	
 	//3. 2번에 구한 값을  ACos
 	float angle = UKismetMathLibrary::DegAcos(dotValue);
 
 
-	// 		//DrawDebugLine(GetWorld(), me->GetActorLocation(), target->GetActorLocation(), FColor::Red, false, 2.0f, 0, 2);
-
-
-		//방법 2- Sweep 방식
+	//방법 2- Sweep 방식
 	if (angle < 20 && dirP.Length() < traceRange)
 	{
 
@@ -363,7 +334,6 @@ bool UFish_FSM::IsTargetTrace()
 	}
 	// 그렇지 않으면 false로 전환
 	return false;
-
 
 }
 
@@ -449,6 +419,8 @@ void UFish_FSM::ChangeState(EFishState state)
 		int32 rand = FMath::RandRange(0, 1);
 		FString sectionName = FString::Printf(TEXT("Eat%d"), rand);
 		me->PlayAnimMontage(EatMontage, 1.0f, FName(*sectionName));
+
+		UE_LOG(LogTemp, Warning, TEXT("EAT MONTAGE!!"));
 	}
 	break;
 
