@@ -53,8 +53,8 @@ void UMoveComponent::RotateAxis(const struct FInputActionValue& value)
 {
 	FVector2D axis = value.Get<FVector2D>();
 
-// 	axis.Y = FMath::Clamp(axis.Y, -45, 45);
-// 	player->AddControllerPitchInput(axis.Y * -1);
+	axis.Y = FMath::Clamp(axis.Y, -45, 45);
+	player->AddControllerPitchInput(axis.Y * -1);
 
 	player->AddControllerYawInput(axis.X);
 }
@@ -107,6 +107,7 @@ void UMoveComponent::DrawMoveLine()
 // 	{
 // 		DrawDebugLine(GetWorld(),lineLocation[i], lineLocation[i+1], FColor::Red, false, -1, 0, 1.5);
 // 	}
+
 	player->teleportTrace->SetVisibility(true);
 	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(player->teleportTrace, TEXT("User.PointArray"), lineLocation);
 
@@ -124,12 +125,11 @@ void UMoveComponent::DrawMoveLine()
 
 void UMoveComponent::MoveTeleportPos(const struct FInputActionValue& value)
 {
-	FVector2D val = value.Get<FVector2D>();
+	float val = value.Get<float>();
 
-	power += val.Y*25;
-	power = FMath::Clamp(power, 100, 500);
+	power += val*25;
+	power = FMath::Clamp(power, 200, 500);
 }
-
 
 void UMoveComponent::Teleport()
 {

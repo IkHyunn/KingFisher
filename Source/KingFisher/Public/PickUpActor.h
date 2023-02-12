@@ -22,4 +22,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	bool brightPickUp = false;
+
+	bool bleftPickUp = false;
 };
