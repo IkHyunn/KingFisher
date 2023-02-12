@@ -11,7 +11,7 @@ AFishBait::AFishBait()
 
 	//SkeltalMeshComponent
 	baitMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BAIT"));
-
+	baitMesh ->SetCollisionProfileName(TEXT("LeftPickUp"));
 // 	baitMesh->SetupAttachment(GetMesh(), TEXT("FishingRod"));
 // 	baitMesh->SetRelativeLocation(FVector(-17, 10, -3));
 // 	baitMesh->SetRelativeRotation(FRotator(0, 90, 0));

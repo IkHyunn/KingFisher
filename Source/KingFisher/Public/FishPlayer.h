@@ -66,4 +66,46 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* teleportTrace;
+
+	TArray<FVector> baitThrowLocation;
+
+	FVector linePos;
+	FVector baitSpawnPos;
+	FVector diagonal;
+
+	UPROPERTY(EditAnywhere)
+	float throwPower = 500;
+
+	int32 lineCount = 100;
+
+	bool bthrowReady = false;
+	bool bThrow = false;
+	bool attachBait = false;
+	bool bFishing = false;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABait> baitFactory;
+
+	UPROPERTY(EditAnywhere)
+	class ABait* bait;
+
+	UPROPERTY(EditDefaultsOnly)
+	class USceneComponent* baitPos;
+
+	float LeftH;
+	float LeftV;
+	float RightH;
+	float RightV;
+
+public:
+	void ThrowReady();
+	void ThrowRelease();
+	void DrawBaitLine();
+	void ThrowBait();
+	void MoveBaitLine(const struct FInputActionValue& value);
+
+	void InputLeftHorizontal(float value);
+	void InputLeftVertical(float value);
+	void InputRightHorizontal(float value);
+	void InputRightVertical(float value);
 };

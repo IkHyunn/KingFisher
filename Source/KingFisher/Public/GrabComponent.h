@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <Components/SkeletalMeshComponent.h>
 #include "GrabComponent.generated.h"
 
 
@@ -46,12 +47,27 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grabDistance = 25;
 
+	UPROPERTY(EditAnywhere)
+	float throwPower = 1000;
+
 	bool actorGrabbed = false;
-	bool bGrab = false;
-	bool leftGrab = false;
+	bool bHandGrab = false;
+	bool bRightGrab = false;
+	bool bLeftGrab = false;
+	bool shootReady = false;
 
 	UPROPERTY(EditAnywhere)
-	class AActor* grabActor = nullptr;
+	class APickUpActor* rightgrabActor = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	class APickUpActor* leftgrabActor = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	class AFishingRod* fishingRod = nullptr;
+
+	FVector prevLocation;
+	FVector throwLocation;
+	FVector prevForward;
 
 public:
 	void LeftGrabAction(const struct FInputActionValue& value);
@@ -70,8 +86,11 @@ public:
 	void RightThumbAction();
 	void RightThumbActionEnd();
 
-	void GrabObject(USkeletalMeshComponent* hand);
-	void ReleaseObject(USkeletalMeshComponent* hand);
+	void RightGrabObject(USkeletalMeshComponent* hand);
+	void RightReleaseObject(USkeletalMeshComponent* hand, FVector torque);
+	void LeftGrabObject(USkeletalMeshComponent* hand);
+	void LeftReleaseObject(USkeletalMeshComponent* hand);
 
 	void DrawGrabRange(USkeletalMeshComponent* hand);
+	void RighthandToShoot();
 };
