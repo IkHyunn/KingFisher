@@ -16,6 +16,7 @@
 #include "Paddle.h"
 #include "FishingRod.h"
 #include <PhysicsEngine/PhysicsConstraintComponent.h>
+#include "Bait.h"
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -44,15 +45,15 @@ void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (rightgrabActor == nullptr && bRightGrab == true)
-	{
-		DrawGrabRange(player->rightHand);
-	}
-
-	if (rightgrabActor == nullptr && bLeftGrab == true)
-	{
-		DrawGrabRange(player->leftHand);
-	}
+// 	if (rightgrabActor == nullptr && bRightGrab == true)
+// 	{
+// 		DrawGrabRange(player->rightHand);
+// 	}
+// 
+// 	if (rightgrabActor == nullptr && bLeftGrab == true)
+// 	{
+// 		DrawGrabRange(player->leftHand);
+// 	}
 }
 
 void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerInputComponent)
@@ -190,6 +191,14 @@ void UGrabComponent::RightGrabObject(USkeletalMeshComponent* hand)
 					compBox->SetSimulatePhysics(false);
 					rightgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FishingRodPos"));
 					rightgrabActor->brightPickUp = true;
+
+// 					fishingRod->pointConstraint->BreakConstraint();
+// 					fishingRod->baitConstraint->BreakConstraint();
+// 					fishingRod->baitConstraint->SetRelativeLocation(fishingRod->baitConstraintPos);
+// 					fishingRod->pointConstraint->SetRelativeLocation(fishingRod->pointConstraintPos);
+// 					fishingRod->pointConstraint->SetConstrainedComponents(fishingRod->pointMesh, NAME_None, fishingRod->baitMesh, NAME_None);
+// 					fishingRod->baitConstraint->SetConstrainedComponents(fishingRod->baitMesh, NAME_None, fishingRod->baitchild->compBox, NAME_None);
+					
 				}
 				else if (rightgrabActor->GetName().Contains(TEXT("Paddle")))
 				{
@@ -273,9 +282,8 @@ void UGrabComponent::LeftReleaseObject(USkeletalMeshComponent* hand)
 		{
 			compBox->SetSimulatePhysics(true);
 			leftgrabActor->bleftPickUp = false;
+			leftgrabActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		}
-
-		leftgrabActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 	leftgrabActor = nullptr;
 }

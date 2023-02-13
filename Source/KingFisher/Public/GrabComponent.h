@@ -65,6 +65,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFishingRod* fishingRod = nullptr;
 
+	class ABait* bait = nullptr;
+
 	FVector prevLocation;
 	FVector throwLocation;
 	FVector prevForward;

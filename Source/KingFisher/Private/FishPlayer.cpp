@@ -197,9 +197,6 @@ void AFishPlayer::ThrowBait()
 {
 	if (bFishing == false)
 	{
-		//	bait = GetWorld()->SpawnActor<ABait>(baitFactory, compGrab->fishingRod->baitMesh->GetComponentLocation(), rightHand->GetComponentRotation());
-		//	bait->compBox->AddImpulse(diagonal*throwPower);
-		compGrab->fishingRod->baitchild->compBox->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 		compGrab->fishingRod->baitMesh->SetRelativeLocation(compGrab->fishingRod->throwPos->GetComponentLocation());
 		compGrab->fishingRod->baitMesh->SetPhysicsLinearVelocity(diagonal * throwPower);
 		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Free, 1000);
@@ -209,11 +206,11 @@ void AFishPlayer::ThrowBait()
 	}
 	else
 	{
-		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Limited, 180);
-		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Limited, 180);
-		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 180);
-		compGrab->fishingRod->baitAttached = false;
+		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Limited, 200);
+		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Limited, 200);
+		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 200);
 		compGrab->fishingRod->baitchild->baitMesh->SetVisibility(false);
+		compGrab->fishingRod->baitAttached = false;
 		bFishing = false;
 	}
 }

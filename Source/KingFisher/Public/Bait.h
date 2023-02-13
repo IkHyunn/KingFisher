@@ -26,4 +26,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* baitMesh;
+
+	bool bBaitReady = false;
 };

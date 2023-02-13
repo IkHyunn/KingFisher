@@ -10,6 +10,9 @@
 #include <PhysicsEngine/PhysicsConstraintComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Components/SkeletalMeshComponent.h>
+#include "FishPlayer.h"
+#include "GrabComponent.h"
+#include "FIsherHandMesh.h"
 
 AFishingRod::AFishingRod()
 {
@@ -58,6 +61,8 @@ AFishingRod::AFishingRod()
 	pointConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Point Constraint"));
 	pointConstraint->SetupAttachment(compBox);
 	pointConstraint->SetConstrainedComponents(pointMesh, NAME_None, baitMesh, NAME_None);
+	pointConstraint->SetRelativeLocation(FVector(221, 0, 0));
+	pointConstraint->SetRelativeRotation(FRotator(180, 180, 0));
 
 	baitActor = CreateDefaultSubobject<UChildActorComponent>(TEXT("Bait Actor"));
 	baitActor->SetupAttachment(baitMesh);
@@ -70,6 +75,7 @@ AFishingRod::AFishingRod()
 
 	baitConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Bait Constraint"));
 	baitConstraint->SetupAttachment(compBox);
+	baitConstraint->SetRelativeLocation(FVector(220, 0, -38));
 
 	throwPos = CreateDefaultSubobject<USceneComponent>(TEXT("Throw Pos"));
 	throwPos -> SetupAttachment(compBox);
@@ -83,21 +89,23 @@ void AFishingRod::BeginPlay()
 	compSphere->OnComponentBeginOverlap.AddDynamic(this, &AFishingRod::AttachBait);
 	
 	baitchild = Cast<ABait>(baitActor->GetChildActor());
-	baitConstraint->SetConstrainedComponents(baitMesh, NAME_None, baitchild->compBox, NAME_None);
-	baitchild->compBox->SetVisibility(false);
 	baitchild->baitMesh->SetVisibility(false);
+
+	pointConstraintPos = pointConstraint->GetRelativeLocation();
+	baitConstraint->SetConstrainedComponents(baitMesh, NAME_None, baitchild->compBox, NAME_None);
+	baitConstraintPos = baitConstraint->GetRelativeLocation();
 }
 
 void AFishingRod::AttachBait(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (baitchild->compBox->IsVisible()==false && baitchild->baitMesh->IsVisible()==false)
+	if (OtherActor != this && OtherActor != baitchild && baitAttached == false)
 	{
 		ABait* bait = Cast<ABait>(OtherActor);
 
 		if (OtherActor == bait)
 		{
-			baitchild->compBox->SetVisibility(true);
-			baitchild->baitMesh->SetVisibility(true);
+			UE_LOG(LogTemp, Warning, TEXT("True"));
+ 			baitchild->baitMesh->SetVisibility(true);
 			bait->Destroy();
 			baitAttached = true;
 		}
