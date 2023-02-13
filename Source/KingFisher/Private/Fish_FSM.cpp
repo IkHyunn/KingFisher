@@ -28,7 +28,7 @@ UFish_FSM::UFish_FSM()
 	// SetActive (true/false) 작동되게 하자.
 	bAutoActivate = true;
 
-	// 몽타주   (애니메이션 몽타주는 또 어떻게 돌리지...?)
+	// 몽타주 
 	ConstructorHelpers::FObjectFinder<UAnimMontage> tempMontage(TEXT("/Script/Engine.AnimMontage'/Game/BluePrints/Fish_Anim/Retargeted_Anim/Retargeted_AMT/IKG_arapaimaAMT_arapaima.IKG_arapaimaAMT_arapaima'"));
 	if (tempMontage.Succeeded())
 	{
@@ -45,8 +45,10 @@ void UFish_FSM::BeginPlay()
 
 	//타겟 찾기
 	target = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(), ABait::StaticClass()));
+
 	//나 찾기
 	me = Cast<AFish>(GetOwner());
+
 
 	//초기 체력 세팅
 	currHP = maxHP;
@@ -67,8 +69,8 @@ void UFish_FSM::BeginPlay()
 void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 
-
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 
 	switch (currState)
 	{
