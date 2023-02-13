@@ -58,12 +58,13 @@ public:
 	UPROPERTY(EditAnywhere)
 		class USceneComponent* throwPos;
 
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ABait> baitFactory;
-
 	class ABait* baitchild;
 
 	bool baitAttached = false;
+
+	FVector baitConstraintPos;
+
+	FVector pointConstraintPos;
 
 public:
 	UFUNCTION()

@@ -41,8 +41,8 @@ void ABasket::BeginPlay()
 {
 	Super::BeginPlay();
 
-	compBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnGrab);
-	compBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::EndGrab);
+// 	compBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnGrab);
+// 	compBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::EndGrab);
 	compFishBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::GetFish);
 	compFishBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::LostFish);
 }
@@ -51,38 +51,38 @@ void ABasket::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bGrabReady == true)
-	{
-		float rightHandZ = player->rightController->GetComponentLocation().Z;
-		compScene->SetRelativeRotation(FRotator(0, 0, rightHandZ));
-	}
+// 	if (bGrabReady == true)
+// 	{
+// 		float rightHandZ = player->rightController->GetComponentLocation().Z;
+// 		compScene->SetRelativeRotation(FRotator(0, 0, rightHandZ));
+// 	}
 }
 
 void ABasket::OnGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != this)
-	{
-		player = Cast<AFishPlayer>(OtherActor);
-		
-		if (OtherActor == player)
-		{
-			bGrabReady = true;
-			//bGrabReady = player->compGrab->bRightGrab;
-		}
-	}
+// 	if (OtherActor != this)
+// 	{
+// 		player = Cast<AFishPlayer>(OtherActor);
+// 		
+// 		if (OtherActor == player)
+// 		{
+// 			bGrabReady = true;
+// 			//bGrabReady = player->compGrab->bRightGrab;
+// 		}
+// 	}
 }
 
 void ABasket::EndGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor != this)
-	{
-		player = Cast<AFishPlayer>(OtherActor);
-
-		if (OtherActor == player)
-		{
-			bGrabReady = false;
-		}
-	}
+// 	if (OtherActor != this)
+// 	{
+// 		player = Cast<AFishPlayer>(OtherActor);
+// 
+// 		if (OtherActor == player)
+// 		{
+// 			bGrabReady = false;
+// 		}
+// 	}
 }
 
 void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
