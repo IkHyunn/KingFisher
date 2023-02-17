@@ -62,6 +62,15 @@ void UFish_FSM::BeginPlay()
 	//ai 변수에 controller 담기
 	ai = Cast<AAIController>(me->GetController());
 
+	//
+	FindDistance();
+
+	// 입질 시스템
+	if (target != nullptr)
+	{
+		startLoc = target->GetActorLocation();
+		endLoc = startLoc + me->GetActorLocation();
+	}
 }
 
 
@@ -101,33 +110,43 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 }
 
+void UFish_FSM::FindDistance()
+{
+	// 타겟과의 거리를 구한다.
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABait::StaticClass(), targetclass);
+
+	target = Cast<ABait>(targetclass[0]);
+	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
+
+	for (int32 i = 1; i < targetclass.Num(); i++)
+	{
+		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
+		{
+			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
+
+			if (min > distance)
+			{
+				//NewDistace를 가진 미끼를 target으로 설정한다.
+				target = Cast<ABait>(targetclass[i]);
+				min = distance;
+
+			}
+		}
+	}
+}
+
 
 
 void UFish_FSM::UpdateSlowSwim()
 {
 
-		//미끼를 쫓아갈 수 있나
-			if (IsWaitComplete(2))
-			{
-				// 현재 상태를 Swim으로 한다.
-				ChangeState(EFishState::Swim);
-	 		}
-// 	 미끼를 쫓아갈 수 있나
-// 		if (IsTargetTrace())
-// 		{
-// 			// 현재 상태를 Swim으로 한다.
-// 			ChangeState(EFishState::Swim);
-// 		}
-// 	else
-// 	{
-// 		//idleDelayTime이 지나면
-// 		bool bComplete = IsWaitComplete(idleDelayTime);
-// 		if (bComplete == true)
-// 		{
-// 			// 현재 상태를 Swim 으로 한다.
-// 			ChangeState(EFishState::Swim);
-// 		}
-// 	}
+	//미끼를 쫓아갈 수 있나
+		if (IsWaitComplete(2))
+		{
+			// 현재 상태를 Swim으로 한다.
+			ChangeState(EFishState::Swim);
+	 	}
+
 }
 
 
@@ -143,54 +162,6 @@ void UFish_FSM::UpdateSwim()
 		{
 			MoveToPos(randPos);
 		}
-// 	타겟 방향 (dir)
-// 		FVector dir = target->GetActorLocation() - me->GetActorLocation();
-// 		// 처음위치, 나(물고기) 현재 위치와의 거리 (dist)
-// 		float dist = FVector::Distance(originPos, me->GetActorLocation());
-// 		// 미끼가 시야에 들어왔는지
-// 		bool bTrace = IsTargetTrace();
-// 	
-// 	
-// 		//민약 거리( dist) 가 moveRange 보다 커지면 (움직이는 반경 넘어간다면)
-// 		if (dist > moveRange)
-// 		{
-// 			//상태를 returnPos로 변경
-// 			ChangeState(EFishState::ReturnPos);
-// 		}
-// 	
-// 		//만약 미끼가 시야에 들어왔다면
-// 		else if (bTrace)
-// 		{
-// 			// 상태를 FastSwim 으로 변경
-// 			ChangeState(EFishState::FastSwim);
-// 	
-// 			//만약 target과 나(물고기)의 거리가 먹을 수 있는 거리보다 작으면
-// 			if (dir.Length() < eatableRange)
-// 			{
-// 				ChangeState(EFishState::Eat);
-// 	
-// 				//먹는 상태 애니메이션 재생
-// 				anim->bEatPlay = true;
-// 	
-// 				//먹는 상태 전환 시, 대기 시간이 바로 끝나도록
-// 				currTime = EatDelayTime;
-// 	
-// 			}
-// 			//그렇지 않으면
-// 			else
-// 			{
-// 				// ai 이용해서 목적지까지 
-// 				ai->MoveToLocation(target->GetActorLocation());
-// 	
-// 			}
-// 		}
-// 	
-// 		//시야에 들어오지 않았다면
-// 		else
-// 		{
-// 			//랜덤한 위치로 도착 후 Idle로 전환
-// 			MoveToPos(randPos);
-// 		}
 
 }
 
@@ -198,9 +169,6 @@ void UFish_FSM::UpdateSwim()
 
 void UFish_FSM::UpdateFastSwim()
 {
-	// 이동
-	//ai->MoveToLocation(target->GetActorLocation(), -1, false);
-	//me->SetActorLocation(target->GetActorLocation());
 
 	// 타겟 방향 (dir)
 	FVector dir = target->GetActorLocation() - me->GetActorLocation();
@@ -227,8 +195,7 @@ void UFish_FSM::UpdateFastSwim()
 
 void UFish_FSM::UpdateEat()
 {
-// 	ChangeState(EFishState::EatDelay);
-// 	ReceiveBait();
+
 }
 
 
@@ -271,6 +238,8 @@ void UFish_FSM::ReceiveBait()
 	if (currHP > 0)
 	{
 		ChangeState(EFishState::Damaged);
+		// fish interaction function call *********************************
+		ControlRotation(1);
 	}
 	else
 	{
@@ -287,20 +256,24 @@ void UFish_FSM::UpdateDamaged()
 	target->bBaitReady = false;
 	target->bBait = false;
 
-// 	뒤로 움직여 준다.
-// 		if (bBite)
-// 		{
-// 			ChangeState(EFishState::EatDelay);
-// 		}
-// 		else
-// 		{
-// 			//delayTime이 지나면
-// 			if (IsWaitComplete(damageDelayTime))
-// 			{
-// 				ChangeState(EFishState::SlowSwim);
-// 	
-// 			}
-// 		}
+}
+
+void UFish_FSM::ControlRotation(float DeltaTime)
+{
+	currentTime += DeltaTime * direction;
+
+	if (currentTime <= 0)
+	{
+		direction = 1;
+	}
+
+	if (currentTime >= 1)
+	{
+		direction = -1;
+	}
+
+	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+
 }
 
 
@@ -319,19 +292,6 @@ void UFish_FSM::UpdateDie()
 	}
 	//머터리얼 색을 꺼라
 	me->ColorOff();
-
-// 	물고기를 미끼에 붙인다.
-// 	    ABait* DieDest = Cast<ABait>(UGameplayStatics::GetActorOfClass(GetWorld(),ABait::StaticClass()));
-// 		
-// 		if (IsValid(DieDest))
-// 		{
-// 		
-// 		me->AttachToComponent(DieDest->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
-// 		// me->SetActorLocation(DieDest->GetActorLocation());
-// 		}
-// 		
-// 		//머터리얼 색을 꺼라
-// 		me->ColorOff();
 
 }
 

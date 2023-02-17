@@ -24,7 +24,7 @@ AFish::AFish()
 	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MOUTH"));
 	capsuleComp->SetCapsuleRadius(5);
 	capsuleComp->SetupAttachment(RootComponent);
-	//capsuleComp->SetRelativeScale (FVector (10,10,10));
+	capsuleComp->SetRelativeScale3D(FVector(15.0f, 2.0f, 0.3f));
 	//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
 // 	capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 // 	capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
@@ -33,7 +33,7 @@ AFish::AFish()
 
 
 	// 1. ±âº» SkeletalMesh
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/arapaima_rig_exp20_SK.arapaima_rig_exp20_SK'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Underwater_life/Mesh/Skeletal_mesh/Animals/atlantic_cod_rig_exp20_SK.atlantic_cod_rig_exp20_SK'"));
  	if (tempMesh.Succeeded())
  	{
  		GetMesh()-> SetSkeletalMesh(tempMesh.Object);

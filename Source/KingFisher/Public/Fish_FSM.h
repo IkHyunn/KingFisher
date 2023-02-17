@@ -156,5 +156,29 @@ public:
 	 // 네비게이션 함수
 	 void Navigation();
 
+	 // 입질 시스템
+	 void ControlRotation(float DeltaTime);
+
+	 // 입
+	 float currentTime = 0.0f;
+	 FVector startLoc;
+	 FVector endLoc;
+	 float direction = 1;
+
+
+	 // 미끼 
+	 UPROPERTY(EditDefaultsOnly)
+	 TArray <AActor*> targetclass;
+
+	 //TArray <AActor*> targetArray;
+
+	 float distance;
+	 float min;
+	 float NewDistance;
+
+	 // 타겟과의 거리 구하기
+	 void FindDistance();
+
+
 	 
 };
