@@ -89,6 +89,7 @@ void AFishPlayer::BeginPlay()
 	UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playercontroller->GetLocalPlayer());
 
 	subSystem->AddMappingContext(myMapping, 0);
+
 	
 }
 
@@ -135,6 +136,7 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	compMove->SetupPlayerInputComponent(enhancedInputComponent);
 	compGrab->SetupPlayerInputComponent(enhancedInputComponent);
+
 }
 
 void AFishPlayer::ThrowReady()
@@ -245,3 +247,5 @@ void AFishPlayer::MoveBaitLine(const struct FInputActionValue& value)
 // {
 //	RightV = value;
 //}
+
+

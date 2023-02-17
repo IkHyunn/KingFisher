@@ -108,4 +108,5 @@ public:
 	void InputLeftVertical(float value);
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
+
 };

@@ -25,6 +25,7 @@ AFish::AFish()
 	capsuleComp->SetCapsuleRadius(5);
 	capsuleComp->SetupAttachment(RootComponent);
 	capsuleComp->SetRelativeScale3D(FVector(15.0f, 2.0f, 0.3f));
+	capsuleComp->SetRelativeLocation(FVector(0.0f,0.0f, 50.0f));
 	//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
 // 	capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 // 	capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
@@ -81,7 +82,6 @@ AFish::AFish()
 		GetMesh()->SetAnimInstanceClass(nullptr);
 
 		// 랜덤한 매쉬를 세팅
-
 		GetMesh()->SetSkeletalMesh(arrayMesh[Rand]);
 
 		// 랜덤한 애니메이션 세팅
