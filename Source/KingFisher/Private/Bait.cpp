@@ -7,6 +7,8 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/BoxComponent.h>
 #include "Components/CapsuleComponent.h"
+#include "Fish_FSM.h"
+#include "Fish.h"
 
 ABait::ABait()
 {
@@ -24,4 +26,39 @@ ABait::ABait()
 	baitMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Bait"));
 	baitMesh->SetupAttachment(compBox);
 	baitMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+//물고기와 오버랩 되었을 때
+void ABait::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	fish = Cast<AFish>(OtherActor);
+	if (fish != nullptr)
+	{
+		bBait = true;
+	}
+}
+
+void ABait::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// 물고기 상호작용
+	if (bBait)
+	{
+		currenttime += DeltaTime;
+		if (currenttime > 1)
+		{
+			if (fish->fsm->currHP > 0)
+			{
+				fish->fsm->ReceiveBait();
+
+			}
+			currenttime = 0;
+		}
+	}
+	else
+	{
+		bBaitReady = true;
+		fish = nullptr;
+	}
 }

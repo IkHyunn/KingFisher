@@ -24,6 +24,7 @@ AFish::AFish()
 	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MOUTH"));
 	capsuleComp->SetCapsuleRadius(5);
 	capsuleComp->SetupAttachment(RootComponent);
+	//capsuleComp->SetRelativeScale (FVector (10,10,10));
 	//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
 // 	capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 // 	capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);

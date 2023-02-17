@@ -16,6 +16,8 @@ class KINGFISHER_API ABait : public APickUpActor
 	
 public:
 	ABait();
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -27,5 +29,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* baitMesh;
 
-	bool bBaitReady = false;
+
+	//물고기와의 상호작용 
+	UPROPERTY(EditAnywhere)
+	bool bBaitReady = true;
+
+	UPROPERTY(EditAnywhere)
+	class AFish* fish;
+
+	UPROPERTY(EditAnywhere)
+	bool bBait = false;
+
+	UPROPERTY(EditAnywhere)
+	float currenttime = 0;
 };

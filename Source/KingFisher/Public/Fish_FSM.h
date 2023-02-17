@@ -81,10 +81,10 @@ public:
 	FVector randPos;
 
 	// 이동반경
-	float moveRange = 1000.0f;
+	float moveRange = 100.0f;
 
 	// 미끼를 먹을 수 있는 반경
-	float eatableRange = 2.0f;
+	float eatableRange = 5.0f;
 
 	// 쫓아갈 수 있는 범위 
 	float traceRange = 500.0f;
@@ -104,18 +104,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ABait* bait;
 
-	//죽었을 때 올라가게 하는 변수
-	//bool bDieMove = false;
-
 	// 감지 범위 
 	float detectRange = 300.0f;
 
 	// 현재 체력
 	UPROPERTY (EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
 	float currHP = 0;
+
 	// 최대 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-	float maxHP = 1;
+	float maxHP = 3;
 
 	bool bBite = false;
 
