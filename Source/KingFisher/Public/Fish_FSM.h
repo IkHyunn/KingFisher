@@ -159,7 +159,7 @@ public:
 	 // 입질 시스템
 	 void ControlRotation(float DeltaTime);
 
-	 // 입
+	 // 입질
 	 float currentTime = 0.0f;
 	 FVector startLoc;
 	 FVector endLoc;

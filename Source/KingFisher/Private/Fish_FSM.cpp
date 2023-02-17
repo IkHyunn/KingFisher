@@ -66,11 +66,11 @@ void UFish_FSM::BeginPlay()
 	FindDistance();
 
 	// 입질 시스템
-	if (target != nullptr)
-	{
-		startLoc = target->GetActorLocation();
-		endLoc = startLoc + me->GetActorLocation();
-	}
+ 	if (target != nullptr)
+ 	{
+ 		startLoc = target->GetActorLocation();
+ 		endLoc = startLoc + me->GetActorLocation();
+ 	}
 }
 
 
