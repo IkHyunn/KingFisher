@@ -52,13 +52,12 @@ public:
 	class AFishManager* fishmanager;
 
 	//AI  관리하는 컴포넌트 (FSM)
+	UPROPERTY(EditAnywhere)
 	class UFish_FSM* fsm; 
 
 	//Fish  활성  or  비활성
 	void SetActive(bool bActive);
 
-	// 죽었을 떄 호출되는 함수를 담는 변수****
-	//FFishDieDelegate dieDelegate;
 
 	// 컬러
 	UPROPERTY (EditAnywhere)

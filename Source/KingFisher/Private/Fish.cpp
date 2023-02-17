@@ -142,8 +142,7 @@ void AFish::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AFish::RandMesh()
 {
 	//Skeletal Mesh 랜덤 재생
-	Rand = FMath::RandRange(0, 1);
-	//Rand = FMath::RandRange(0, 9);
+	Rand = FMath::RandRange(0, 9);
 
 	//Outline 색을 넣는다.
 	GetMesh()->SetMaterial(0, outlineMat);
