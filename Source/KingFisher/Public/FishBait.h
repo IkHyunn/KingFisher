@@ -25,4 +25,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USkeletalMeshComponent* baitMesh;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* compBox;
+
+	float runningTime;
+
+	bool bFloat=false;
 };

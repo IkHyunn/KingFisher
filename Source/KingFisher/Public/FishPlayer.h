@@ -72,6 +72,15 @@ public:
 	FVector linePos;
 	FVector baitSpawnPos;
 	FVector diagonal;
+	FVector currBobberPos;
+
+	FVector prevBaitLoc;
+	FVector prevBaitForward;
+	FVector throwDirection;
+
+	FVector rotAxis;
+
+	float angle;
 
 	UPROPERTY(EditAnywhere)
 	float throwPower = 500;
@@ -82,6 +91,8 @@ public:
 	bool bThrow = false;
 	bool attachBait = false;
 	bool bFishing = false;
+	bool bReeling = false;
+	bool bReleasing = false;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABait> baitFactory;
@@ -91,6 +102,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	class USceneComponent* baitPos;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetInteractionComponent* widgetPointer_Left;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetPointerComponent* compPointer;
+
+// 	UPROPERTY(EditAnywhere)
+// 	class UWidgetComponent* startWidgetComp;
 
 	float LeftH;
 	float LeftV;
@@ -103,6 +123,8 @@ public:
 	void DrawBaitLine();
 	void ThrowBait();
 	void MoveBaitLine(const struct FInputActionValue& value);
+	void BaitReleasing();
+	void BaitReeling();
 
 	void InputLeftHorizontal(float value);
 	void InputLeftVertical(float value);

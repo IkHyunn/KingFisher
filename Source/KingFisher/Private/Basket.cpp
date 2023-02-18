@@ -11,6 +11,7 @@
 #include "FishPlayer.h"
 #include "GrabComponent.h"
 #include <MotionControllerComponent.h>
+#include "FIsherHandMesh.h"
 
 ABasket::ABasket()
 {
@@ -31,7 +32,7 @@ ABasket::ABasket()
 
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	compBox->SetupAttachment(handleMesh);
-	compBox->SetCollisionProfileName(TEXT("PickUp"));;
+	compBox->SetCollisionObjectType(ECC_GameTraceChannel3);
 
 	compFishBox = CreateDefaultSubobject<UBoxComponent>(TEXT("GetFishZone"));
 	compFishBox->SetupAttachment(basketMesh);
@@ -41,8 +42,8 @@ void ABasket::BeginPlay()
 {
 	Super::BeginPlay();
 
-// 	compBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnGrab);
-// 	compBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::EndGrab);
+	compBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnGrab);
+	compBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::EndGrab);
 	compFishBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::GetFish);
 	compFishBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::LostFish);
 }
@@ -51,11 +52,12 @@ void ABasket::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-// 	if (bGrabReady == true)
-// 	{
-// 		float rightHandZ = player->rightController->GetComponentLocation().Z;
-// 		compScene->SetRelativeRotation(FRotator(0, 0, rightHandZ));
-// 	}
+	if (bOpen)
+	{
+		lidLoc = handLoc-player->rightHand->GetComponentLocation();
+		lidLocZ = FMath::Clamp(compScene->GetComponentRotation().Roll+lidLoc.Z, -40, 50);
+		compScene->SetRelativeRotation(FRotator(0, 0, lidLocZ));
+	}
 }
 
 void ABasket::OnGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -67,7 +69,7 @@ void ABasket::OnGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 // 		if (OtherActor == player)
 // 		{
 // 			bGrabReady = true;
-// 			//bGrabReady = player->compGrab->bRightGrab;
+// 			UE_LOG(LogTemp, Warning, TEXT("GrabReady"));
 // 		}
 // 	}
 }
@@ -81,6 +83,7 @@ void ABasket::EndGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 // 		if (OtherActor == player)
 // 		{
 // 			bGrabReady = false;
+// 			UE_LOG(LogTemp, Warning, TEXT("GrabReadyEnd"));
 // 		}
 // 	}
 }
