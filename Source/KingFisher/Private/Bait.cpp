@@ -10,6 +10,8 @@
 
 ABait::ABait()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	SetRootComponent(compBox);
 	compBox->SetCollisionProfileName(TEXT("PickUp"));
@@ -24,4 +26,14 @@ ABait::ABait()
 	baitMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Bait"));
 	baitMesh->SetupAttachment(compBox);
 	baitMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABait::BeginPlay()
+{
+
+}
+
+void ABait::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "TempFishingRod.generated.h"
+#include "StartUIActor.generated.h"
 
 UCLASS()
-class KINGFISHER_API ATempFishingRod : public AActor
+class KINGFISHER_API AStartUIActor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ATempFishingRod();
+	AStartUIActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,8 +25,11 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* fishingRod;
+	class UWidgetComponent* startWidgetComp;
 
-	UPROPERTY(EditAnywhere)
-	class USphereComponent* compSphere;
+	class AFishPlayer* player;
+
+public:
+	void GameStart();
+	void GameQuit();
 };

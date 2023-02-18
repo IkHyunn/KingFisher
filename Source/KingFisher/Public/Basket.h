@@ -46,9 +46,15 @@ public:
 
 	class AFisherGameModeBase* gameMode;
 
-	class AFishPlayer* player;
+	class AFishPlayer* player = nullptr;
 	
 	bool bGrabReady = false;
+
+	bool bOpen = false;
+
+	FVector handLoc;
+	FVector lidLoc;
+	float lidLocZ;
 
 public:
 	UFUNCTION()

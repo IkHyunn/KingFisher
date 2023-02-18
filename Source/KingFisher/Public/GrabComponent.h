@@ -39,9 +39,6 @@ public:
 	class UFisherHandAnim* rightanim;
 
 	UPROPERTY(EditAnywhere)
-	class ATempFishingRod* rodMesh;
-
-	UPROPERTY(EditAnywhere)
 	class APickUpActor* pickUpActor;
 
 	UPROPERTY(EditAnywhere)
@@ -65,7 +62,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFishingRod* fishingRod = nullptr;
 
-	class ABait* bait = nullptr;
+	UPROPERTY(EditAnywhere)
+	class ABasket* basket = nullptr;
+
+	class ABait* bait;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABait> baitFactory;
 
 	FVector prevLocation;
 	FVector throwLocation;
@@ -95,4 +98,6 @@ public:
 
 	void DrawGrabRange(USkeletalMeshComponent* hand);
 	void RighthandToShoot();
+
+	
 };

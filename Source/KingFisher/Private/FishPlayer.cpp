@@ -17,6 +17,9 @@
 #include <Components/BoxComponent.h>
 #include "FishingRod.h"
 #include <PhysicsEngine/PhysicsConstraintComponent.h>
+#include <UMG/Public/Components/WidgetInteractionComponent.h>
+#include "WidgetPointerComponent.h"
+#include <UMG/Public/Components/WidgetComponent.h>
 
 
 // Sets default values
@@ -47,6 +50,9 @@ AFishPlayer::AFishPlayer()
 	leftHand->SetRelativeRotation(FRotator(-25, 180, 90));
 	leftHand->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	widgetPointer_Left = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Left Widget Pointer"));
+	widgetPointer_Left->SetupAttachment(leftController);
+
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> templeft(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'"));
 	if (templeft.Succeeded())
 	{
@@ -72,9 +78,20 @@ AFishPlayer::AFishPlayer()
 
 	compMove=CreateDefaultSubobject<UMoveComponent>(TEXT("MoveComponent"));
 	compGrab=CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComponent"));
+	compPointer=CreateDefaultSubobject<UWidgetPointerComponent>(TEXT("PointerComponent"));
 
 	teleportTrace = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TeleportTrace"));
 	teleportTrace->SetupAttachment(rightHand);
+
+// 	startWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Start Widget Component"));
+// 	startWidgetComp -> SetupAttachment(RootComponent);
+// 
+// 	ConstructorHelpers::FClassFinder<UUserWidget>tempstart(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Widget/WG_StartUI.WG_StartUI_C'"));
+// 	if (tempstart.Succeeded())
+// 	{
+// 		startWidgetComp->SetWidgetClass(tempstart.Class);
+// 		startWidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
+// 	}
 }
 
 // Called when the game starts or when spawned
@@ -97,9 +114,25 @@ void AFishPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bthrowReady && bFishing == false && compGrab->fishingRod->baitAttached == true)
+// 	if (bthrowReady && !bFishing)
+// 	{
+// 		DrawBaitLine();
+// 	}
+
+	if (bReeling)
 	{
-		DrawBaitLine();
+		FVector P0 = compGrab->fishingRod->bobberMesh->GetComponentLocation();
+		FVector V = this->GetActorLocation()-P0;
+
+		compGrab->fishingRod->bobberMesh->SetWorldLocation(P0+V*DeltaTime);
+	}
+
+	if (bReleasing)
+	{
+		FVector P0 = compGrab->fishingRod->bobberMesh->GetComponentLocation();
+		FVector V = -(this->GetActorLocation()-P0);
+
+		compGrab->fishingRod->bobberMesh->SetWorldLocation(P0+V*DeltaTime);
 	}
 
 // 	FVector LeftP0 = leftController->GetComponentLocation();
@@ -132,22 +165,28 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Started, this, &AFishPlayer::ThrowReady);
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Completed, this, &AFishPlayer::ThrowRelease);
 	enhancedInputComponent->BindAction(rightInputs[1], ETriggerEvent::Triggered, this, &AFishPlayer::MoveBaitLine);
+	enhancedInputComponent->BindAction(rightInputs[2], ETriggerEvent::Started, this, &AFishPlayer::BaitReeling);
+	enhancedInputComponent->BindAction(rightInputs[2], ETriggerEvent::Completed, this, &AFishPlayer::BaitReeling);
+	enhancedInputComponent->BindAction(rightInputs[3], ETriggerEvent::Started, this, &AFishPlayer::BaitReleasing);
+	enhancedInputComponent->BindAction(rightInputs[3], ETriggerEvent::Completed, this, &AFishPlayer::BaitReleasing);
 
 	compMove->SetupPlayerInputComponent(enhancedInputComponent);
 	compGrab->SetupPlayerInputComponent(enhancedInputComponent);
+	compPointer->SetupPlayerInputComponent(enhancedInputComponent);
 }
 
 void AFishPlayer::ThrowReady()
 {
-	if (compGrab->fishingRod != nullptr && compGrab->fishingRod->baitAttached == true)
+	if (compGrab->fishingRod != nullptr)
 	{
 		bthrowReady = true;
+		prevBaitLoc = rightController->GetComponentLocation();
 	}
 }
 
 void AFishPlayer::ThrowRelease()
 {
-	if (compGrab->fishingRod != nullptr && compGrab->fishingRod->baitAttached == true)
+	if (compGrab->fishingRod != nullptr)
 	{
 		bthrowReady = false;
 		ThrowBait();
@@ -197,8 +236,12 @@ void AFishPlayer::ThrowBait()
 {
 	if (bFishing == false)
 	{
-		compGrab->fishingRod->baitMesh->SetRelativeLocation(compGrab->fishingRod->throwPos->GetComponentLocation());
-		compGrab->fishingRod->baitMesh->SetPhysicsLinearVelocity(diagonal * throwPower);
+		//compGrab->fishingRod->bobberMesh->SetRelativeLocation(compGrab->fishingRod->throwPos->GetComponentLocation());
+		//compGrab->fishingRod->bobberMesh->SetPhysicsLinearVelocity(diagonal * throwPower);
+		throwDirection = rightController->GetComponentLocation() - prevBaitLoc;
+		throwDirection.Normalize();
+		compGrab->fishingRod->bobberMesh->SetRelativeLocation(rightController->GetComponentLocation());
+		compGrab->fishingRod->bobberMesh->AddImpulse(throwDirection*500);
 		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Free, 1000);
 		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Free, 1000);
 		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Free, 1000);
@@ -206,23 +249,48 @@ void AFishPlayer::ThrowBait()
 	}
 	else
 	{
-		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Limited, 200);
-		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Limited, 200);
-		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 200);
-		compGrab->fishingRod->baitchild->baitMesh->SetVisibility(false);
+		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Limited, 30);
+		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Limited, 30);
+		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Limited, 30);
 		compGrab->fishingRod->baitAttached = false;
+		compGrab->fishingRod->bobberMesh->SetSimulatePhysics(true);
+		compGrab->fishingRod->bBobberFloat = false;
 		bFishing = false;
 	}
 }
 
 void AFishPlayer::MoveBaitLine(const struct FInputActionValue& value)
 {
-	if (compGrab->fishingRod != nullptr && compGrab->fishingRod->baitAttached == true)
+	if (compGrab->fishingRod != nullptr)
 	{
-		float val = value.Get<float>();
+		FVector2D axis = value.Get<FVector2D>();
 
-		throwPower += val * 25;
+		throwPower += axis.Y * 25;
 		throwPower = FMath::Clamp(throwPower, 200, 1000);
+	}
+}
+
+void AFishPlayer::BaitReleasing()
+{
+	if (!bReleasing && bFishing)
+	{
+		bReleasing = true;
+	}
+	else
+	{
+		bReleasing = false;
+	}
+}
+
+void AFishPlayer::BaitReeling()
+{
+	if (!bReeling && bFishing)
+	{
+		bReeling = true;
+	}
+	else
+	{
+		bReeling = false;
 	}
 }
 

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PickUpActor.generated.h"
+#include "WaterSurface.generated.h"
 
 UCLASS()
-class KINGFISHER_API APickUpActor : public AActor
+class KINGFISHER_API AWaterSurface : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APickUpActor();
+	AWaterSurface();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,10 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool brightPickUp = false;
-
-	bool bleftPickUp = false;
-
+public:
 	UPROPERTY(EditAnywhere)
-	FVector gripOffset;
+	class UBoxComponent* compBox;
+
+public:
+	UFUNCTION()
+	void OnWaterSurface(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

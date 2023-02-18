@@ -13,100 +13,87 @@
 #include "FishPlayer.h"
 #include "GrabComponent.h"
 #include "FIsherHandMesh.h"
+#include "EngineUtils.h"
 
 AFishingRod::AFishingRod()
 {
-	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
-	SetRootComponent(compBox);
-	compBox->SetCollisionProfileName(TEXT("PickUp"));
-	compBox->SetSimulatePhysics(true);
-	compBox->SetBoxExtent(FVector(50, 3, 3));
+	compRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
+	SetRootComponent(compRoot);
 
-	fishingRodMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
-	fishingRodMesh->SetupAttachment(compBox);
-	fishingRodMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	fishingRodMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FishingRod Mesh"));
+	fishingRodMesh->SetupAttachment(compRoot);
+	fishingRodMesh->SetCollisionObjectType(ECC_GameTraceChannel3);
 	fishingRodMesh->SetRelativeScale3D(FVector(2));
-	fishingRodMesh->SetRelativeLocation(FVector(53, 7, 3));
+	fishingRodMesh->SetSimulatePhysics(true);
 
-	pointMesh=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Point"));
+	pointMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Point"));
 	pointMesh->SetupAttachment(fishingRodMesh);
 	pointMesh->SetRelativeLocation(FVector(84, -3.4, -1.5));
 	pointMesh->SetRelativeRotation(FRotator(0, -90, 0));
 	pointMesh->SetRelativeScale3D(FVector(0.005));
 
-	rodCable_1 = CreateDefaultSubobject<UCableComponent>(TEXT("RodCable_1"));
-	rodCable_1->SetupAttachment(fishingRodMesh);
-	rodCable_1->SetRelativeLocation(FVector(-32.5, -3, -1.5));
-	rodCable_1->bAttachStart = true;
-	rodCable_1->bAttachEnd = true;
-	rodCable_1->CableWidth = 0.1;
-	rodCable_1->CableGravityScale = 0;
-	
-	rodCable_2 = CreateDefaultSubobject<UCableComponent>(TEXT("RodCable_2"));
-	rodCable_2->SetupAttachment(fishingRodMesh);
-	rodCable_2->SetRelativeLocation(FVector(84, -3.25, -1.5));
-	rodCable_2->bAttachStart = true;
-	rodCable_2->bAttachEnd = true;
-	rodCable_2->CableWidth = 0.1;
-	rodCable_2->CableGravityScale = 0.01;
-	rodCable_2->SetAttachEndToComponent(baitMesh);
+	bobberCable = CreateDefaultSubobject<UCableComponent>(TEXT("Bobber Cable"));
+	bobberCable->SetupAttachment(fishingRodMesh);
+	bobberCable->SetRelativeLocation(FVector(84, -3.25, -1.5));
+	bobberCable->bAttachStart = true;
+	bobberCable->bAttachEnd = true;
+	bobberCable->CableWidth = 0.1;
+	bobberCable->CableGravityScale = 0.01;
+	bobberCable->SetAttachEndToComponent(bobberMesh);
 
-	baitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bait Mesh"));
-	baitMesh->SetupAttachment(compBox);
-	baitMesh->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	bobberMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bobber Mesh"));
+	bobberMesh->SetupAttachment(fishingRodMesh);
+	bobberMesh->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	bobberMesh->SetSimulatePhysics(true);
 
-	compSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
-	compSphere->SetupAttachment(baitMesh);
+	compSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Bait Attach Collision"));
+	compSphere->SetupAttachment(bobberMesh);
 
 	pointConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Point Constraint"));
-	pointConstraint->SetupAttachment(compBox);
-	pointConstraint->SetConstrainedComponents(pointMesh, NAME_None, baitMesh, NAME_None);
-	pointConstraint->SetRelativeLocation(FVector(221, 0, 0));
+	pointConstraint->SetupAttachment(fishingRodMesh);
+	pointConstraint->SetConstrainedComponents(pointMesh, NAME_None, bobberMesh, NAME_None);
+	pointConstraint->SetRelativeLocation(FVector(84, -3.4, -1.5));
 	pointConstraint->SetRelativeRotation(FRotator(180, 180, 0));
 
-	baitActor = CreateDefaultSubobject<UChildActorComponent>(TEXT("Bait Actor"));
-	baitActor->SetupAttachment(baitMesh);
-
-	ConstructorHelpers::FClassFinder<ABait>tempbait(TEXT("/Script/Engine.Blueprint'/Game/BluePrints/BP_Bait.BP_Bait_C'"));
-	if (tempbait.Succeeded())
-	{
-		baitActor->SetChildActorClass(tempbait.Class);
-	}
-
-	baitConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Bait Constraint"));
-	baitConstraint->SetupAttachment(compBox);
-	baitConstraint->SetRelativeLocation(FVector(220, 0, -38));
-
 	throwPos = CreateDefaultSubobject<USceneComponent>(TEXT("Throw Pos"));
-	throwPos -> SetupAttachment(compBox);
-	throwPos -> SetRelativeRotation(FRotator(0, -90, 0));
+	throwPos->SetupAttachment(fishingRodMesh);
+	throwPos->SetRelativeRotation(FRotator(0, -90, 0));
 }
 
 void AFishingRod::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	compSphere->OnComponentBeginOverlap.AddDynamic(this, &AFishingRod::AttachBait);
-	
-	baitchild = Cast<ABait>(baitActor->GetChildActor());
-	baitchild->baitMesh->SetVisibility(false);
 
-	pointConstraintPos = pointConstraint->GetRelativeLocation();
-	baitConstraint->SetConstrainedComponents(baitMesh, NAME_None, baitchild->compBox, NAME_None);
-	baitConstraintPos = baitConstraint->GetRelativeLocation();
+	compSphere->OnComponentBeginOverlap.AddDynamic(this, &AFishingRod::AttachBait);
+}
+
+void AFishingRod::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bBobberFloat)
+	{
+		FVector NewLocation = bobberMesh->GetComponentLocation();
+		float deltaHeight = (FMath::Sin(runningTime + DeltaTime) - FMath::Sin(runningTime));
+		NewLocation.Z += deltaHeight * 10;
+		runningTime += DeltaTime;
+
+		bobberMesh->SetWorldLocation(NewLocation);
+	}
 }
 
 void AFishingRod::AttachBait(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != this && OtherActor != baitchild && baitAttached == false)
+	if (OtherActor != this)
 	{
 		ABait* bait = Cast<ABait>(OtherActor);
 
 		if (OtherActor == bait)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("True"));
- 			baitchild->baitMesh->SetVisibility(true);
-			bait->Destroy();
+			bait->AttachToComponent(bobberMesh,FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("baitSocket"));
+			bait->compBox->SetSimulatePhysics(false);
+			bait->bAttached = true;
 			baitAttached = true;
 		}
 	}

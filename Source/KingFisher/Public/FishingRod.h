@@ -21,9 +21,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 public:
 	UPROPERTY(EditAnywhere)
-		class UBoxComponent* compBox;
+		class USceneComponent* compRoot;
 
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* fishingRodMesh;
@@ -38,10 +41,10 @@ public:
 		class UCableComponent* rodCable_1;
 
 	UPROPERTY(EditAnywhere)
-		class UCableComponent* rodCable_2;
+		class UCableComponent* bobberCable;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* baitMesh;
+		class UStaticMeshComponent* bobberMesh;
 
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* pointMesh;
@@ -50,21 +53,16 @@ public:
 		class UPhysicsConstraintComponent* pointConstraint;
 
 	UPROPERTY(EditAnywhere)
-		class UPhysicsConstraintComponent* baitConstraint;
-
-	UPROPERTY(EditAnywhere)
 		class AFishPlayer* player;
 
 	UPROPERTY(EditAnywhere)
 		class USceneComponent* throwPos;
 
-	class ABait* baitchild;
-
 	bool baitAttached = false;
 
-	FVector baitConstraintPos;
-
-	FVector pointConstraintPos;
+	bool bBobberFloat = false;
+	
+	float runningTime;
 
 public:
 	UFUNCTION()

@@ -53,8 +53,8 @@ void UMoveComponent::RotateAxis(const struct FInputActionValue& value)
 {
 	FVector2D axis = value.Get<FVector2D>();
 
-	axis.Y = FMath::Clamp(axis.Y, -45, 45);
-	player->AddControllerPitchInput(axis.Y * -1);
+// 	axis.Y = FMath::Clamp(axis.Y, -45, 45);
+// 	player->AddControllerPitchInput(axis.Y * -1);
 
 	player->AddControllerYawInput(axis.X);
 }
@@ -125,9 +125,9 @@ void UMoveComponent::DrawMoveLine()
 
 void UMoveComponent::MoveTeleportPos(const struct FInputActionValue& value)
 {
-	float val = value.Get<float>();
+	FVector2D axis = value.Get<FVector2D>();
 
-	power += val*25;
+	power += axis.Y*25;
 	power = FMath::Clamp(power, 200, 500);
 }
 

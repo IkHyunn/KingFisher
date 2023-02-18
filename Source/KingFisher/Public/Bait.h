@@ -18,6 +18,11 @@ public:
 	ABait();
 
 public:
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* compBox;
 
@@ -28,4 +33,8 @@ public:
 	class USkeletalMeshComponent* baitMesh;
 
 	bool bBaitReady = false;
+
+	bool bAttached = false;
+
+	float runningTime;
 };

@@ -8,7 +8,7 @@ public class KingFisher : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "Niagara", "NavigationSystem", "AIModule", "CableComponent" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "Niagara", "NavigationSystem", "AIModule", "CableComponent", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
