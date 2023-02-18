@@ -62,8 +62,8 @@ void UFish_FSM::BeginPlay()
 	//ai 변수에 controller 담기
 	ai = Cast<AAIController>(me->GetController());
 
-	//
-	FindDistance();
+	// 미끼와의 최단거리 구하기
+	//FindDistance();
 
 	// 입질 시스템
  	if (target != nullptr)
@@ -109,31 +109,31 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		break;
 	}
 }
-
-void UFish_FSM::FindDistance()
-{
-	// 타겟과의 거리를 구한다.
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABait::StaticClass(), targetclass);
-
-	target = Cast<ABait>(targetclass[0]);
-	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
-
-	for (int32 i = 1; i < targetclass.Num(); i++)
-	{
-		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
-		{
-			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
-
-			if (min > distance)
-			{
-				//NewDistace를 가진 미끼를 target으로 설정한다.
-				target = Cast<ABait>(targetclass[i]);
-				min = distance;
-
-			}
-		}
-	}
-}
+// 
+// void UFish_FSM::FindDistance()
+// {
+// 	// 타겟과의 거리를 구한다.
+// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABait::StaticClass(), targetclass);
+// 
+// 	target = Cast<ABait>(targetclass[0]);
+// 	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
+// 
+// 	for (int32 i = 1; i < targetclass.Num(); i++)
+// 	{
+// 		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
+// 		{
+// 			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
+// 
+// 			if (min > distance)
+// 			{
+// 				//NewDistace를 가진 미끼를 target으로 설정한다.
+// 				target = Cast<ABait>(targetclass[i]);
+// 				min = distance;
+// 
+// 			}
+// 		}
+// 	}
+//}
 
 
 
@@ -238,8 +238,8 @@ void UFish_FSM::ReceiveBait()
 	if (currHP > 0)
 	{
 		ChangeState(EFishState::Damaged);
-		// fish interaction function call *********************************
-		ControlRotation(1);
+		// 물고기 입질시스템  *********************************
+		//ControlRotation(1);
 	}
 	else
 	{
@@ -258,23 +258,23 @@ void UFish_FSM::UpdateDamaged()
 
 }
 
-void UFish_FSM::ControlRotation(float DeltaTime)
-{
-	currentTime += DeltaTime * direction;
-
-	if (currentTime <= 0)
-	{
-		direction = 1;
-	}
-
-	if (currentTime >= 1)
-	{
-		direction = -1;
-	}
-
-	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
-
-}
+// void UFish_FSM::ControlRotation(float DeltaTime)
+// {
+// 	currentTime += DeltaTime * direction;
+// 
+// 	if (currentTime <= 0)
+// 	{
+// 		direction = 1;
+// 	}
+// 
+// 	if (currentTime >= 1)
+// 	{
+// 		direction = -1;
+// 	}
+// 
+// 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+// 
+// }
 
 
 void UFish_FSM::UpdateDie()

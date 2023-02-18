@@ -177,7 +177,7 @@ public:
 	 float NewDistance;
 
 	 // 타겟과의 거리 구하기
-	 void FindDistance();
+	// void FindDistance();
 
 
 	 
