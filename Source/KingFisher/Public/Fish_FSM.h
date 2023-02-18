@@ -157,7 +157,7 @@ public:
 	 void Navigation();
 
 	 // 입질 시스템
-	 void ControlRotation(float DeltaTime);
+	/* void ControlRotation(float DeltaTime);*/
 
 	 // 입질
 	 float currentTime = 0.0f;
@@ -165,12 +165,9 @@ public:
 	 FVector endLoc;
 	 float direction = 1;
 
-
 	 // 미끼 
 	 UPROPERTY(EditDefaultsOnly)
 	 TArray <AActor*> targetclass;
-
-	 //TArray <AActor*> targetArray;
 
 	 float distance;
 	 float min;
