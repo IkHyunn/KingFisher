@@ -43,7 +43,6 @@ void AStartUIActor::Tick(float DeltaTime)
 
 void AStartUIActor::GameStart()
 {
-	FTimer
 }
 
 void AStartUIActor::GameQuit()

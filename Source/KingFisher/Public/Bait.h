@@ -42,4 +42,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float currenttime = 0;
+
+	bool bAttached = false;
 };

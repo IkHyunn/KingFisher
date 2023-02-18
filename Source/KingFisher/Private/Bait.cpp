@@ -14,7 +14,7 @@ ABait::ABait()
 {
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	SetRootComponent(compBox);
-	compBox->SetCollisionProfileName(TEXT("PickUp"));
+	compBox->SetCollisionObjectType(ECC_GameTraceChannel3);
 	compBox->SetSimulatePhysics(true);
 
 	//콜리전 박스
