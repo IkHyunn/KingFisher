@@ -62,9 +62,6 @@ void UFish_FSM::BeginPlay()
 	//ai 변수에 controller 담기
 	ai = Cast<AAIController>(me->GetController());
 
-	// 미끼와의 최단거리 구하기
-	//FindDistance();
-
 	// 입질 시스템
  	if (target != nullptr)
  	{
@@ -108,8 +105,11 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		UpdateReturnPos();
 		break;
 	}
+
+	// 미끼와의 최단거리 구하기
+	//FindDistance();
 }
-// 
+
 // void UFish_FSM::FindDistance()
 // {
 // 	// 타겟과의 거리를 구한다.
@@ -133,7 +133,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 			}
 // 		}
 // 	}
-//}
+// }
 
 
 
@@ -239,7 +239,7 @@ void UFish_FSM::ReceiveBait()
 	{
 		ChangeState(EFishState::Damaged);
 		// 물고기 입질시스템  *********************************
-		//ControlRotation(1);
+		ControlRotation(1);
 	}
 	else
 	{
@@ -258,23 +258,23 @@ void UFish_FSM::UpdateDamaged()
 
 }
 
-// void UFish_FSM::ControlRotation(float DeltaTime)
-// {
-// 	currentTime += DeltaTime * direction;
-// 
-// 	if (currentTime <= 0)
-// 	{
-// 		direction = 1;
-// 	}
-// 
-// 	if (currentTime >= 1)
-// 	{
-// 		direction = -1;
-// 	}
-// 
-// 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
-// 
-// }
+void UFish_FSM::ControlRotation(float DeltaTime)
+{
+	currentTime += DeltaTime * direction;
+
+	if (currentTime <= 0)
+	{
+		direction = 1;
+	}
+
+	if (currentTime >= 1)
+	{
+		direction = -1;
+	}
+
+	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+
+}
 
 
 void UFish_FSM::UpdateDie()
