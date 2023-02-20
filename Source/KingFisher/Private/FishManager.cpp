@@ -44,15 +44,22 @@ void AFishManager::CreateFish()
 		SpawnCount++;
 
 		//랜덤 위치 구하기
-		int index = FMath::RandRange(0, spawnPoints.Num() - 1);
-		// 물고기 생성 및 배치
-		GetWorld()->SpawnActor<AFish>(fishFactory,
-		spawnPoints[index]->GetActorLocation(), FRotator(0));
+		 int32 Index = FMath::RandRange(0, spawnPoints.Num() - 1);
 
-		// 다시 랜덤 시간에 CreateFish 함수가 호출되도록 타이머 설정
-		float createTime = FMath::RandRange(minTime, maxTime);
-		GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle,
-		this, &AFishManager::CreateFish, createTime);
+		// 물고기 생성 및 배치
+		if (spawnPoints[Index] != nullptr)
+		{
+			GetWorld()->SpawnActor<AFish>(fishFactory,
+				spawnPoints[Index]->GetActorLocation(), FRotator(0));
+
+			UE_LOG(LogTemp, Warning, TEXT("%d"), SpawnCount)
+
+				// 다시 랜덤 시간에 CreateFish 함수가 호출되도록 타이머 설정
+				float createTime = FMath::RandRange(minTime, maxTime);
+			GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle,
+				this, &AFishManager::CreateFish, createTime);
+		}
+		
 	}
 	
 }
