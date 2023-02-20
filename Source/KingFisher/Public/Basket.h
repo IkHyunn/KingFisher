@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFish* fish;
 
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* scorePos;
+
 	class AFisherGameModeBase* gameMode;
 
 	class AFishPlayer* player = nullptr;

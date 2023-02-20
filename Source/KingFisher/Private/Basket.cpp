@@ -12,6 +12,7 @@
 #include "GrabComponent.h"
 #include <MotionControllerComponent.h>
 #include "FIsherHandMesh.h"
+#include "ScoreUIActor.h"
 
 ABasket::ABasket()
 {
@@ -36,6 +37,9 @@ ABasket::ABasket()
 
 	compFishBox = CreateDefaultSubobject<UBoxComponent>(TEXT("GetFishZone"));
 	compFishBox->SetupAttachment(basketMesh);
+
+	scorePos = CreateDefaultSubobject<USceneComponent>(TEXT("Score Widget"));
+	scorePos->SetupAttachment(RootComponent);
 }
 
 void ABasket::BeginPlay()
@@ -100,6 +104,7 @@ void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 			gameMode = Cast<AFisherGameModeBase>(currMode);
 
 			gameMode->AddScore(1);
+			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
 		}
 	}
 }

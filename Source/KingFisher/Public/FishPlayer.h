@@ -101,7 +101,7 @@ public:
 	class ABait* bait;
 
 	UPROPERTY(EditDefaultsOnly)
-	class USceneComponent* baitPos;
+	class USceneComponent* menuPos;
 
 	UPROPERTY(EditAnywhere)
 	class UWidgetInteractionComponent* widgetPointer_Left;
@@ -109,8 +109,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetPointerComponent* compPointer;
 
-// 	UPROPERTY(EditAnywhere)
-// 	class UWidgetComponent* startWidgetComp;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* menuWidgetComp;
 
 	float LeftH;
 	float LeftV;
@@ -118,6 +118,7 @@ public:
 	float RightV;
 
 public:
+	void OpenMenu();
 	void ThrowReady();
 	void ThrowRelease();
 	void DrawBaitLine();

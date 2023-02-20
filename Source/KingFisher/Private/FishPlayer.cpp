@@ -20,6 +20,7 @@
 #include <UMG/Public/Components/WidgetInteractionComponent.h>
 #include "WidgetPointerComponent.h"
 #include <UMG/Public/Components/WidgetComponent.h>
+#include "MenuUIActor.h"
 
 
 // Sets default values
@@ -69,8 +70,8 @@ AFishPlayer::AFishPlayer()
 	rightHand->SetRelativeRotation(FRotator(25, 0, 90));
 	rightHand->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	baitPos = CreateDefaultSubobject<USceneComponent>(TEXT("bait Spawn Pos"));
-	baitPos ->SetupAttachment(RootComponent);
+	menuPos = CreateDefaultSubobject<USceneComponent>(TEXT("bait Spawn Pos"));
+	menuPos ->SetupAttachment(RootComponent);
 
 	bUseControllerRotationPitch = true;
 
@@ -83,15 +84,16 @@ AFishPlayer::AFishPlayer()
 	teleportTrace = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TeleportTrace"));
 	teleportTrace->SetupAttachment(rightHand);
 
-// 	startWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Start Widget Component"));
-// 	startWidgetComp -> SetupAttachment(RootComponent);
-// 
-// 	ConstructorHelpers::FClassFinder<UUserWidget>tempstart(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Widget/WG_StartUI.WG_StartUI_C'"));
-// 	if (tempstart.Succeeded())
-// 	{
-// 		startWidgetComp->SetWidgetClass(tempstart.Class);
-// 		startWidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
-// 	}
+	menuWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Start Widget Component"));
+	menuWidgetComp -> SetupAttachment(RootComponent);
+	menuWidgetComp->SetVisibility(false);
+
+	ConstructorHelpers::FClassFinder<UUserWidget>tempmenu(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Widget/WG_GameMenuUI.WG_GameMenuUI_C'"));
+	if (tempmenu.Succeeded())
+	{
+		menuWidgetComp->SetWidgetClass(tempmenu.Class);
+		menuWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -161,6 +163,7 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 // 	PlayerInputComponent->BindAxis(TEXT("lefthandvertical"), this, &AFishPlayer::InputLeftVertical);
 // 	PlayerInputComponent->BindAxis(TEXT("righthandhorizontal"), this, &AFishPlayer::InputRightHorizontal);
 // 	PlayerInputComponent->BindAxis(TEXT("righthandvertical"), this, &AFishPlayer::InputRightVertical);
+	enhancedInputComponent->BindAction(leftInputs[0], ETriggerEvent::Started, this, &AFishPlayer::OpenMenu);
 
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Started, this, &AFishPlayer::ThrowReady);
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Completed, this, &AFishPlayer::ThrowRelease);
@@ -173,6 +176,19 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	compMove->SetupPlayerInputComponent(enhancedInputComponent);
 	compGrab->SetupPlayerInputComponent(enhancedInputComponent);
 	compPointer->SetupPlayerInputComponent(enhancedInputComponent);
+}
+
+void AFishPlayer::OpenMenu()
+{
+//	GetWorld()->SpawnActor<AMenuUIActor>(AMenuUIActor::StaticClass(), menuPos->GetComponentLocation(), menuPos->GetComponentRotation());
+	if (menuWidgetComp->IsVisible() == false)
+	{
+		menuWidgetComp->SetVisibility(true);
+	}
+	else
+	{
+		menuWidgetComp->SetVisibility(false);
+	}
 }
 
 void AFishPlayer::ThrowReady()
