@@ -128,7 +128,9 @@ void AFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
+	/// **********Ãß°¡ ****************
+// 	if(fsm->bIsDead)
+// 	OnFishDeath().Broadcast();
 }
 
 // Called to bind functionality to input

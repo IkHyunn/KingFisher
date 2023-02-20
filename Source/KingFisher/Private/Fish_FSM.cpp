@@ -13,6 +13,7 @@
 #include "NavigationSystem/Public/NavigationSystem.h"
 #include "Bait.h"
 #include "Kismet/GameplayStatics.h"
+#include "UMG/Public/Blueprint/UserWidget.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -63,11 +64,11 @@ void UFish_FSM::BeginPlay()
 	ai = Cast<AAIController>(me->GetController());
 
 	// 입질 시스템
- 	if (target != nullptr)
- 	{
- 		startLoc = target->GetActorLocation();
- 		endLoc = startLoc + me->GetActorLocation();
- 	}
+//  	if (target != nullptr)
+//  	{
+//  		startLoc = target->GetActorLocation();
+//  		endLoc = startLoc + me->GetActorLocation();
+// 	}
 }
 
 
@@ -105,7 +106,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		UpdateReturnPos();
 		break;
 	}
-// 
+
 // 	// 입질 시스템_ 호출
 // 	if (bBite)
 // 	{
@@ -113,9 +114,11 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 	}
 
 	// 미끼와의 최단거리 구하기
-// 	FindDistance();
-// }
-// 
+	/*FindDistance()*/;
+}
+
+
+
 // void UFish_FSM::FindDistance()
 // {
 // 	// 타겟과의 거리를 구한다.
@@ -128,6 +131,8 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 	{
 // 		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
 // 		{
+// 			UE_LOG(LogTemp,Warning, TEXT("%s"), *(targetclass[i]->GetName()));
+// 			
 // 			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
 // 
 // 			if (min > distance)
@@ -139,7 +144,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 			}
 // 		}
 // 	}
-}
+//}
 
 
 
@@ -151,6 +156,8 @@ void UFish_FSM::UpdateSlowSwim()
 		{
 			// 현재 상태를 Swim으로 한다.
 			ChangeState(EFishState::Swim);
+			
+			
 	 	}
 
 }
@@ -162,6 +169,7 @@ void UFish_FSM::UpdateSwim()
 	//  미끼를 쫓아갈 수 있나
 		if (IsTargetTrace())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("FAST SWIM"))
 			ChangeState(EFishState::FastSwim);
 		}
 		else
@@ -222,7 +230,6 @@ void UFish_FSM::UpdateEatDelay()
 			{
 				// 미끼 범위안에 들면 천천히 다가온다.
 				ChangeState(EFishState::Eat);
-
 			}
 		}
 		else
@@ -231,7 +238,6 @@ void UFish_FSM::UpdateEatDelay()
 			{
 				//뒤로 간다.--> 뒤로 가는 함수 하나 더 만들어야 할 것 같음******
 				ChangeState(EFishState::Swim);
-
 			}
 		}
 	}
@@ -244,8 +250,13 @@ void UFish_FSM::ReceiveBait()
 	if (currHP > 0)
 	{
 		ChangeState(EFishState::Damaged);
-		// 물고기 입질시스템  *********************************
-		//ControlRotation(GetWorld()->GetDeltaSeconds());
+
+// 		if (bBaitReady == false)
+// 		{
+// 		// 물고기 입질시스템  *********************************
+// 		//ControlRotation(DeltatTime);
+
+		//}
 	}
 	else
 	{
@@ -299,6 +310,13 @@ void UFish_FSM::UpdateDie()
 	//머터리얼 색을 꺼라
 	me->ColorOff();
 
+	//추가*****
+	//bIsDead = true;
+
+// 	if (bIsDead)
+// 	{
+// 		ShowWidget();
+// 	}
 }
 
 
@@ -318,6 +336,18 @@ bool UFish_FSM::IsWaitComplete(float delayTime)
 }
 
 
+// void UFish_FSM::ShowWidget()
+// {
+// 	FString WidgetPath = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Fish/BP_FishUI.BP_FishUI_C'");
+// 	UUserWidget* mywidget = CreateWidget<UUserWidget>(GetWorld(),TEXT("WidgetPath"));
+// 	if (mywidget)
+// 	{
+//		//플레이어 카메라에 위젯을 붙이고 싶다.
+// 		mywidget->AddToViewport();
+// 		mywidget->Initialize();
+// 	}
+//}
+
 
 
 bool UFish_FSM::IsTargetTrace()
@@ -328,21 +358,44 @@ bool UFish_FSM::IsTargetTrace()
 	//2. 나의 앞방향과 1번에 구한 벡터의 내적
 	float dotValue = FVector::DotProduct(me->GetActorForwardVector(), dirP.GetSafeNormal());
 
-	
 	//3. 2번에 구한 값을  ACos
 	float angle = UKismetMathLibrary::DegAcos(dotValue);
 
 
 	//방법 2- Sweep 방식
+// 	if (angle < 40 && dirP.Length() < traceRange)
+// 	{
+// 
+// 		return true; 
+// 	}
+	FVector StartLoc = me->GetActorLocation();
+	FVector EndLoc = target->GetActorLocation();
+	FHitResult hitInfo;
+	FString profileName = FString (TEXT("PickUp"));
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(me);
+
+	
 	if (angle < 40 && dirP.Length() < traceRange)
 	{
 
-		return true; 
+	bHit = GetWorld()->SweepSingleByProfile(hitInfo, startLoc, endLoc, FQuat::Identity, TEXT("DETECT"),
+		FCollisionShape::MakeSphere(Dest), params) ;
+	
+		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
+		if (bHit && target != nullptr)
+		{
+			if (hitInfo.GetActor()->GetName().Contains(TEXT("Bait")))
+			{
+			UE_LOG(LogTemp, Warning, TEXT("DETECTION!!!"))
+				return true;
+			}
+		
+		}
+
 	}
-
-	// 그렇지 않으면 false로 전환
-	return false;
-
+		// 그렇지 않으면 false로 전환
+		return false;
 }
 
 
@@ -418,6 +471,7 @@ void UFish_FSM::ChangeState(EFishState state)
 	case EFishState::FastSwim:
 	{
 		Navigation();
+
 	}
 	break;
 

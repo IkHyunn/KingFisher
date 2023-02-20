@@ -84,6 +84,7 @@ AFishPlayer::AFishPlayer()
 	teleportTrace = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TeleportTrace"));
 	teleportTrace->SetupAttachment(rightHand);
 
+
 	menuWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Start Widget Component"));
 	menuWidgetComp -> SetupAttachment(RootComponent);
 	menuWidgetComp->SetVisibility(false);
@@ -94,6 +95,15 @@ AFishPlayer::AFishPlayer()
 		menuWidgetComp->SetWidgetClass(tempmenu.Class);
 		menuWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	}
+
+
+	//물고기 UI 컴포넌트
+// 	ConstructorHelpers::FClassFinder<UChildActorComponent> tempchild (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishUIActor.BP_fishUIActor_C'"));
+// 	if (tempchild.Succeeded())
+// 	{
+// 		childActorComp = tempchild.Class;
+// 	}
+
 }
 
 // Called when the game starts or when spawned
@@ -272,6 +282,17 @@ void AFishPlayer::ThrowBait()
 		compGrab->fishingRod->bobberMesh->SetSimulatePhysics(true);
 		compGrab->fishingRod->bBobberFloat = false;
 		bFishing = false;
+
+
+		// 낚시대를 당겼을 때, ui를 호출한다.
+		/*if (	)*/
+		//{ 
+			FVector camLoc = camera->GetForwardVector()*100.0f;
+			if (childActorComp)
+			{
+				childActorComp->SetVisibility(true);
+			}
+		//}
 	}
 }
 

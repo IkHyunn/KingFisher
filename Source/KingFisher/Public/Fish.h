@@ -88,4 +88,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grapDistance = 1.0f;
 
+	//경험치 
+	UPROPERTY(EditAnywhere)
+	int32 Experience;
+
+	//죽었을 떄 UI호출 *********************************(추가)*******
+	/*DECLARE_DYNAMIC_DELEGATE(FOnFishDeath);*/
+
+// 	UFUNCTION(BlueprintCallable)
+// 	void OnFishDeath();
+	
+
+
 };

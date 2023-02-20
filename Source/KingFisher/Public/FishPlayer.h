@@ -132,4 +132,8 @@ public:
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
 
+	// UI component
+	UPROPERTY(EditAnywhere)
+	class UChildActorComponent* childActorComp;
+
 };

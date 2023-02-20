@@ -174,8 +174,22 @@ public:
 	 float NewDistance;
 
 	 //타겟과의 거리 구하기
-	 //void FindDistance();
+	 /*void FindDistance();*/
 
+	 // 추가 ****
+	 bool bIsDead = false;
 
+	 // 위젯 보여준다
+	 void ShowWidget();
+
+	 // Sweep방식으로 쫓기
+	 UPROPERTY(EditAnywhere)
+	 float Dest = 200.0f;
+
+	 bool bHit;
+
+	 
+
+	
 	 
 };
