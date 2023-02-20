@@ -29,7 +29,13 @@ public:
 
 	class AFishPlayer* player;
 
+	bool bGameStart = false;
+
+	float currentTime = 0;
+	float delayTime = 2;
+
 public:
 	void GameStart();
 	void GameQuit();
+	void OpenMainLevel();
 };

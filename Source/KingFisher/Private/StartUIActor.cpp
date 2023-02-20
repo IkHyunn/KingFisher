@@ -7,6 +7,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include "FishPlayer.h"
 #include <Kismet/GameplayStatics.h>
+#include <Engine/EngineTypes.h>
 
 // Sets default values
 AStartUIActor::AStartUIActor()
@@ -39,13 +40,32 @@ void AStartUIActor::BeginPlay()
 void AStartUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(bGameStart)
+	{
+		currentTime += DeltaTime;
+		if (currentTime > delayTime)
+		{
+			OpenMainLevel();
+			currentTime = 0;
+		}
+	}
 }
 
 void AStartUIActor::GameStart()
 {
+	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraFade(0, 1, 1, FLinearColor::Black, false, true);
+	bGameStart = true;
+// 	FTimerHandle fadeTimer;
+// 	GetWorld()->GetTimerManager().SetTimer(fadeTimer, this, &AStartUIActor::OpenMainLevel, 1.0f, false);
 }
 
 void AStartUIActor::GameQuit()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+}
+
+void AStartUIActor::OpenMainLevel()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("map_village_day"));
 }

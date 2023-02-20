@@ -44,7 +44,7 @@ void AClearZone::StageClear(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		if (currMode->currScore >= 1)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Clear"));
-			UGameplayStatics::OpenLevel(GetWorld(), TEXT("VRTemplateMap"));
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("TestLevel"));
 		}
 	}
 }

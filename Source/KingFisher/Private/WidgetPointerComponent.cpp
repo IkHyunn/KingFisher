@@ -48,6 +48,6 @@ void UWidgetPointerComponent::ClickWidget()
 
 void UWidgetPointerComponent::ReleaseWidget()
 {
-	player->widgetPointer_Left->ReleaseKey(EKeys::LeftMouseButton);
+	player->widgetPointer_Left->ReleasePointerKey(EKeys::LeftMouseButton);
 }
 
