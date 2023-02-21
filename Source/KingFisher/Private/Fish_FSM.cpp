@@ -63,14 +63,23 @@ void UFish_FSM::BeginPlay()
 	//ai 변수에 controller 담기
 	ai = Cast<AAIController>(me->GetController());
 
-	// 입질 시스템
+
+
+	// 입질 시스템 ********************* (물었을 때)
 //  	if (target != nullptr)
 //  	{
+// 		
+// 		//myLoc = FVector::IsNormalized(-1*(target->GetActorLocation()- me->GetActorLocation()));
+// 		//myLoc = FVector::GetSafeNormal(target->GetActorLocation() - me->GetActorLocation());
+// 		//myLoc = target->GetActorLocation()*(-1.0f);
+// 		
 //  		startLoc = target->GetActorLocation();
 //  		endLoc = startLoc + me->GetActorLocation();
+// 
+// 		
 // 	}
-}
 
+}
 
 // Called every frame
 void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -107,17 +116,46 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		break;
 	}
 
-// 	// 입질 시스템_ 호출
-// 	if (bBite)
-// 	{
-// 		ControlRotation(DeltaTime);
-// 	}
+ 	// 입질 시스템_ 호출 **************처음 걸린 물고기만
+	if (fishArray.Num() == 0)
+	{
+		return;
+	}
+	if (target->bBait)
+	{
+		//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
+		fishArray[0]->SetActorLocation();
+		// 배열에서 첫번째 물고기 활성화
+		fishArray[0]->SetActive(true);
+
+		startLoc = target->GetActorLocation();
+		endLoc = startLoc + me->GetActorLocation();
+
+		ControlRotation(DeltaTime);
+	}
 
 	// 미끼와의 최단거리 구하기
 	/*FindDistance()*/;
 }
 
 
+void UFish_FSM::ControlRotation(float DeltaTime)
+{
+	currentTime += DeltaTime * direction;
+
+	if (currentTime <= 0)
+	{
+		direction = 1;
+	}
+
+	if (currentTime >= 1)
+	{
+		direction = -1;
+	}
+
+	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+
+}
 
 // void UFish_FSM::FindDistance()
 // {
@@ -152,12 +190,10 @@ void UFish_FSM::UpdateSlowSwim()
 {
 
 	//미끼를 쫓아갈 수 있나
-		if (IsWaitComplete(2))
+		if (IsWaitComplete(3))
 		{
 			// 현재 상태를 Swim으로 한다.
-			ChangeState(EFishState::Swim);
-			
-			
+			ChangeState(EFishState::Swim);		
 	 	}
 
 }
@@ -166,10 +202,9 @@ void UFish_FSM::UpdateSlowSwim()
 void UFish_FSM::UpdateSwim()
 {
 
-	//  미끼를 쫓아갈 수 있나
+		// 미끼를 쫓아갈 수 있나
 		if (IsTargetTrace())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("FAST SWIM"))
 			ChangeState(EFishState::FastSwim);
 		}
 		else
@@ -193,23 +228,27 @@ void UFish_FSM::UpdateFastSwim()
 	{
 		if (dir.Length() > moveRange)
 		{
+			
 			//ai->MoveToLocation(target->GetActorLocation());
 			ai->MoveToLocation(target->GetActorLocation(), -1, false);
+			
 
 		}
 
 	}
-	else if (target->fish != me)
-	{
-		ChangeState(EFishState::ReturnPos);
-	}
+// 	else if (target->fish != me)
+// 	{
+// 		ChangeState(EFishState::ReturnPos);
+// 	}
 
 }
 
 
 void UFish_FSM::UpdateEat()
 {
-
+// 	*********추가 ************//
+// 		ChangeState(EFishState::Swim);
+// 		UE_LOG(LogTemp, Warning, TEXT("UPDATE EATTT "));
 }
 
 
@@ -221,6 +260,8 @@ void UFish_FSM::UpdateEatDelay()
 		currTime = 0;
 		anim->bEatPlay = true;
 
+		UE_LOG(LogTemp, Warning, TEXT("EAT DELAYYY"));
+
 		FVector dir = target->GetActorLocation() - me->GetActorLocation();
 		if (dir.Length() < eatableRange)
 		{
@@ -228,7 +269,6 @@ void UFish_FSM::UpdateEatDelay()
 
 			if (bBite)
 			{
-				// 미끼 범위안에 들면 천천히 다가온다.
 				ChangeState(EFishState::Eat);
 			}
 		}
@@ -236,7 +276,6 @@ void UFish_FSM::UpdateEatDelay()
 		{
 			if (bBite == false)
 			{
-				//뒤로 간다.--> 뒤로 가는 함수 하나 더 만들어야 할 것 같음******
 				ChangeState(EFishState::Swim);
 			}
 		}
@@ -275,23 +314,6 @@ void UFish_FSM::UpdateDamaged()
 
 }
 
-// void UFish_FSM::ControlRotation(float DeltaTime)
-// {
-// 	currentTime += DeltaTime * direction;
-// 
-// 	if (currentTime <= 0)
-// 	{
-// 		direction = 1;
-// 	}
-// 
-// 	if (currentTime >= 1)
-// 	{
-// 		direction = -1;
-// 	}
-// 
-// 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
-// 
-// }
 
 
 void UFish_FSM::UpdateDie()
@@ -368,34 +390,63 @@ bool UFish_FSM::IsTargetTrace()
 // 
 // 		return true; 
 // 	}
+
+//*******************
+// 	FVector StartLoc = me->GetActorLocation();
+// 	FVector EndLoc = target->GetActorLocation();
+// 	FHitResult hitInfo;
+// 	FString profileName = FString (TEXT("DETECT"));
+// 	FCollisionQueryParams params;
+// 	params.AddIgnoredActor(me);
+// 
+// 	
+// 	if (angle < 40 && dirP.Length() < traceRange)
+// 	{
+// 
+// 	bHit = GetWorld()->SweepSingleByProfile(hitInfo, startLoc, endLoc, FQuat::Identity, TEXT("DETECT"),
+// 		FCollisionShape::MakeSphere(Dest), params) ;
+// 	
+// 		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
+// 		if (bHit && target != nullptr)
+// 		{	
+// 			UE_LOG(LogTemp, Warning, TEXT("FAST SWIMMM"))
+// 			if (hitInfo.GetActor()->GetName().Contains(TEXT("Bait")))
+// 			{
+// 				UE_LOG(LogTemp, Warning, TEXT("DETECTION!!!"))
+// 				return true;
+// 			}
+// 		
+// 		}
+// 
+//		
+		// 그렇지 않으면 false로 전환
+	//    return false;
+// 	}
+// 
+	//Linetrace
 	FVector StartLoc = me->GetActorLocation();
 	FVector EndLoc = target->GetActorLocation();
+
 	FHitResult hitInfo;
-	FString profileName = FString (TEXT("PickUp"));
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(me);
+	FCollisionQueryParams TraceParams(TEXT("LineTrace"), true, GetOwner());
+	TraceParams.bTraceComplex = true; 
+	TraceParams.bReturnPhysicalMaterial = true; 
 
-	
-	if (angle < 40 && dirP.Length() < traceRange)
+	if (GetWorld()->LineTraceSingleByChannel(hitInfo, StartLoc, EndLoc, ECC_Visibility, TraceParams))
 	{
-
-	bHit = GetWorld()->SweepSingleByProfile(hitInfo, startLoc, endLoc, FQuat::Identity, TEXT("DETECT"),
-		FCollisionShape::MakeSphere(Dest), params) ;
-	
-		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
-		if (bHit && target != nullptr)
-		{
-			if (hitInfo.GetActor()->GetName().Contains(TEXT("Bait")))
-			{
-			UE_LOG(LogTemp, Warning, TEXT("DETECTION!!!"))
-				return true;
-			}
+		//라인트레이스 성공
+		ABait* HitActor = Cast<ABait>(hitInfo.GetActor());
 		
+		if (HitActor)
+		{
+			DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
+
+			return true;
 		}
 
 	}
-		// 그렇지 않으면 false로 전환
-		return false;
+			return false;
+
 }
 
 
@@ -406,7 +457,6 @@ void UFish_FSM::MoveToPos(FVector pos)
 	if (IsValid(ai))
 	{
 		EPathFollowingRequestResult::Type result = ai->MoveToLocation(pos);
-
 
 		//만약 목적지에 도착한다면
 		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
