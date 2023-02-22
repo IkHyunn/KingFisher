@@ -32,12 +32,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFishPlayer* player; 
 
-	//추가
-// 	class AFish* fish;
-// 
-// 	class UFish_FSM* fishfsm;
-
-
 	//바인딩 함수
 	UFUNCTION()
 	void Release();

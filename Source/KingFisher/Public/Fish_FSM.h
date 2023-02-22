@@ -117,7 +117,7 @@ public:
 
 	// 최대 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-	float maxHP = 3;
+	float maxHP = 1;
 
 	bool bBite = false;
 
@@ -160,8 +160,8 @@ public:
 	 // 네비게이션 함수
 	 void Navigation();
 
-	 // 입질 시스템 **********
-	//void ControlRotation(float DeltaTime);
+	 // 입질 시스템 
+	void ControlRotation(float DeltaTime);
 
 	 // 입질
 	 float currentTime = 0.0f;
@@ -170,15 +170,6 @@ public:
 	 float direction = 1;
 	 float speed = 0.02f;
 	 FVector myLoc;
-	 /***************( 추가 )******/
-	 UPROPERTY(EditAnywhere)
-	 TArray <class AFish*> fishArray;
-
-	 //*************** 
-
-	 // 미끼 
-	 UPROPERTY(EditDefaultsOnly)
-	 TArray <AActor*> targetclass;
 
 	 float distance;
 	 float min;
@@ -195,9 +186,16 @@ public:
 	 float Dest = 200.0f;
 
 	 bool bHit;
-	 
 
-	
+	 UPROPERTY(EditAnywhere)
+	 TArray <class AFish*> fishArray;
+
+	 // 미끼 
+	 UPROPERTY(EditDefaultsOnly)
+	 TArray <AActor*> targetclass;
+
+
+
 
 
 	 

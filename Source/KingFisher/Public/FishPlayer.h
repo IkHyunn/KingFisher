@@ -116,7 +116,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AfishWidgetActor> fish_Ui;
 
-	bool bOpenUI = false; 
+	bool bCatch = false; 
+ 
 
 	float LeftH;
 	float LeftV;
@@ -124,7 +125,6 @@ public:
 	float RightV;
 
 public:
-	void SpawnfishUi();
 	void OpenMenu();
 	void ThrowReady();
 	void ThrowRelease();

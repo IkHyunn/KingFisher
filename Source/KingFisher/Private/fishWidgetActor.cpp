@@ -12,6 +12,7 @@
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "FisherGameModeBase.h"
 #include "UMG/Public/Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 
 
@@ -38,6 +39,10 @@ AfishWidgetActor::AfishWidgetActor()
 void AfishWidgetActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// GameMode Ä³½Ì
+	gameMode = Cast<AFisherGameModeBase>(GetWorld()->GetAuthGameMode());
+
 
 	if (widgetComp != nullptr)
 	{

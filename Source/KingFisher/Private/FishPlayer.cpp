@@ -99,7 +99,7 @@ AFishPlayer::AFishPlayer()
 
 
 	//물고기 UI
-	ConstructorHelpers::FClassFinder<AfishWidgetActor> tempfishUI (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishUIActor.BP_fishUIActor_C'"));
+	ConstructorHelpers::FClassFinder<AfishWidgetActor> tempfishUI (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishwidgetActor.BP_fishwidgetActor_C'"));
 	if (tempfishUI.Succeeded())
 	{
 		fish_Ui=tempfishUI.Class;
@@ -161,12 +161,7 @@ void AFishPlayer::Tick(float DeltaTime)
 // 	FVector RightP = RightP0 + (RightHor+RightVer)*500*DeltaTime;
 // 	rightController->SetRelativeLocation(RightP);
 
-	//fishUI 함수 호출
-	if (bOpenUI)
-	{
-		SpawnfishUi();
-		bOpenUI = false;
-	}
+	
 }
 
 // Called to bind functionality to input
@@ -195,17 +190,6 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	compPointer->SetupPlayerInputComponent(enhancedInputComponent);
 }
 
-//*********************** (수정중) **************************//
-void AFishPlayer::SpawnfishUi()
-{
-	FVector widgetLoc = GetActorLocation()+ camera->GetForwardVector() * 100.0f;
-	FRotator trans = FRotator(0, 180,0);
-
-	// fish_UI widget을 스폰 (위치, 방향)
-	GetWorld()->SpawnActor<AfishWidgetActor> (fish_Ui, widgetLoc, trans);
-	
-
-}
 
 void AFishPlayer::OpenMenu()
 {
@@ -301,6 +285,18 @@ void AFishPlayer::ThrowBait()
 		compGrab->fishingRod->bobberMesh->SetSimulatePhysics(true);
 		compGrab->fishingRod->bBobberFloat = false;
 		bFishing = false;
+
+		if (bCatch)
+		{
+			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 100.0f;
+			FRotator trans = FRotator(0, GetActorRotation().Yaw, 0);
+			
+
+			// fish_UI widget을 스폰 (위치, 방향)
+			GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
+			bCatch = false;
+
+		}
 
 	}
 }

@@ -64,22 +64,18 @@ void UFish_FSM::BeginPlay()
 	//ai 변수에 controller 담기
 	ai = Cast<AAIController>(me->GetController());
 
+	fishPlayer = Cast<AFishPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 
-	// 입질 시스템 ********************* (물었을 때)
-//   	if (target != nullptr)
-//   	{
-//  		
-// 		myLoc = -(target->GetActorLocation() - me->GetActorLocation());
-// 		myLoc.Normalize();
-// 		//myLoc = FVector::GetSafeNormal(target->GetActorLocation() - me->GetActorLocation());
-// 		//myLoc = target->GetActorLocation()*(-1.0f);
-// 		
-//  		startLoc = target->GetActorLocation();
-//  		endLoc = startLoc + me->GetActorLocation();
+
+	// 입질 시스템 
+// 	if (target != nullptr)
+// 	{
+// 			startLoc = target->GetActorLocation();
+// 			endLoc = startLoc + me->GetActorLocation();
 // 
-// 		
- //	}
+// 	}
+
 
 }
 
@@ -118,62 +114,51 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		break;
 	}
 
- 	// 입질 시스템_ 호출 **************처음 걸린 물고기만
-// 	if (fishArray.Num() == 0)
-// 	{
-// 		return;
-// 
-//		else 
-//		{
-    		//물고기를 배열에 담는다.
-// 	          fishArray.Add(me);
-//		}
-// 	}
-// 
-// 
-// 	if (target->bBait)
-// 	{
-// 		//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
-// 		//myLoc = fishArray[0]->GetActorLocation();
-// 
-// 		// 배열에서 첫번째 물고기 활성화
-// 		//fishArray[0]->SetActive(true);
-// 
-// 		startLoc = target->GetActorLocation();
-// 		endLoc = startLoc + myLoc*500;
-// 
-// 		//함수 호출
-// 		ControlRotation(DeltaTime);
-// 
-// 		// 0번째에서 빼기
-// 		//fishArray.RemoveAt(0);
-// 
-// 
-// 	}
- 		// 미끼와의 최단거리 구하기 ******************
- 		FindDistance();
+	if (target->bBait)
+	{
+		ControlRotation(DeltaTime);
+	}
 
+
+		// 미끼와의 최단거리 구하기
+		FindDistance();
+
+
+
+ 	// 입질 시스템_ 호출 *********************************************************
+	if (fishArray.Num() == 0)
+	{
+		return;
+	}
+		else 
+		{
+    		  //물고기를 배열에 담는다.
+			  fishArray.Add(me);
+
+			if (target->bBait)
+			{
+				//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
+				myLoc = fishArray[0]->GetActorLocation();
+				
+				// 배열에서 첫번째 물고기 활성화
+				//fishArray[0]->SetActive(true);
+				
+				startLoc = targetclass[0]->GetActorLocation();
+				endLoc = startLoc + myLoc * 500;
+
+
+				// 물고기 0번째에서 빼기
+				fishArray.RemoveAt(0);
+
+				// 타겟 0번째 빼기
+				 targetclass.RemoveAt(0);
+
+			}
+ 				
+		}
+
+		
 }
-
-//
-//  void UFish_FSM::ControlRotation(float DeltaTime)
-//  {
-//  	currentTime += DeltaTime * direction;
-// 	
-//  	if (currentTime <= 0)
-//  	{
-//  		direction = 1;
-//  	}
-// 	 
-//  	if (currentTime >= 1)
-//  	{
-//  		direction = -1;
-//  	}
-//  
-//  	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
-//  
-//   }
-
 
 // 최단거리 구하는 함수
 void UFish_FSM::FindDistance()
@@ -201,6 +186,24 @@ void UFish_FSM::FindDistance()
 		}
 	}
 }
+
+ void UFish_FSM::ControlRotation(float DeltaTime)
+ {
+ 	currentTime += DeltaTime * direction;
+	
+ 	if (currentTime <= 0)
+ 	{
+ 		direction = 1;
+ 	}
+	 
+ 	if (currentTime >= 1)
+ 	{
+ 		direction = -1;
+ 	}
+ 
+ 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+ 
+  }
 
 
 
@@ -314,6 +317,7 @@ void UFish_FSM::ReceiveBait()
 	else
 	{
 		ChangeState(EFishState::Die);
+		fishPlayer->bCatch = true;
 	}
 }
 
@@ -346,8 +350,7 @@ void UFish_FSM::UpdateDie()
 	//머터리얼 색을 꺼라
 	me->ColorOff();
 
-	// 플레이어의 위젯 호출 ************
-	fishPlayer->bOpenUI = true;
+	
 }
 
 

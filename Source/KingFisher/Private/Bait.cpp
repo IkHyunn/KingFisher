@@ -35,6 +35,8 @@ void ABait::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (fish != nullptr)
 	{
 		bBait = true;
+
+	
 	}
 }
 
@@ -50,7 +52,7 @@ void ABait::Tick(float DeltaTime)
 		{
 			if (fish->fsm->currHP > 0)
 			{
-			UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
+				UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
 				fish->fsm->ReceiveBait();
 
 			}
