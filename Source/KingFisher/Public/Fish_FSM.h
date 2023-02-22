@@ -104,6 +104,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ABait* bait;
 
+	//플레이어
+	UPROPERTY(EditAnywhere)
+	class AFishPlayer* fishPlayer;
+
 	// 감지 범위 
 	float detectRange = 300.0f;
 
@@ -170,8 +174,7 @@ public:
 	 UPROPERTY(EditAnywhere)
 	 TArray <class AFish*> fishArray;
 
-	 //***************
-
+	 //*************** 
 
 	 // 미끼 
 	 UPROPERTY(EditDefaultsOnly)
@@ -182,10 +185,7 @@ public:
 	 float NewDistance;
 
 	 //타겟과의 거리 구하기
-	/* void FindDistance();*/
-
-	 // 추가 ****
-	 bool bIsDead = false;
+	void FindDistance();
 
 	 // 위젯 보여준다
 	 void ShowWidget();

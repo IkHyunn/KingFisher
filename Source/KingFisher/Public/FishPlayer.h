@@ -112,12 +112,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* menuWidgetComp;
 
+	// fish_UI
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AfishWidgetActor> fish_Ui;
+
+	bool bOpenUI = false; 
+
 	float LeftH;
 	float LeftV;
 	float RightH;
 	float RightV;
 
 public:
+	void SpawnfishUi();
 	void OpenMenu();
 	void ThrowReady();
 	void ThrowRelease();
@@ -132,8 +139,6 @@ public:
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
 
-	// UI component
-	UPROPERTY(EditAnywhere)
-	class UChildActorComponent* childActorComp;
+	
 
 };

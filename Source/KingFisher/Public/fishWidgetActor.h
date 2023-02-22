@@ -24,9 +24,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	class USceneComponent* rootComp;
-
-	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* screenComp;
 
 	UPROPERTY(EditAnywhere)
@@ -41,8 +38,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UfishUI* ui; 
 
+	UPROPERTY(EditAnywhere)
+	class AFisherGameModeBase* gameMode;
+
 	void ReleaseFish();
 	void KeepFish();
-	void UpdateExperienceTxt();
+	void UpdateFishNumTxt();
 
 };

@@ -10,6 +10,8 @@
 #include "Fish.h"
 #include "Bait.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
+#include "FisherGameModeBase.h"
+#include "UMG/Public/Components/TextBlock.h"
 
 
 
@@ -18,14 +20,18 @@ AfishWidgetActor::AfishWidgetActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	SetRootComponent(rootComp);
-
 	screenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Screen"));
 	screenComp->SetupAttachment(RootComponent);
 
 	widgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Component"));
 	widgetComp->SetupAttachment(RootComponent);
+
+	ConstructorHelpers::FClassFinder<UUserWidget> tempui(TEXT(""));
+	if (tempui.Succeeded())
+	{
+		widgetComp->SetWidgetClass(tempui.Class);
+		widgetComp->SetWidgetSpace(EWidgetSpace::World);
+	}
 }
 
 
@@ -35,23 +41,22 @@ void AfishWidgetActor::BeginPlay()
 
 	if (widgetComp != nullptr)
 	{
-		UfishUI* fishwidget = Cast<UfishUI>(widgetComp->GetWidget());
+		ui = Cast<UfishUI>(widgetComp->GetWidget());
 
-		if (fishwidget != nullptr)
+		if (ui != nullptr)
 		{
-			fishwidget->fishUIActor = this;
+			ui->fishUIActor = this;
 		}
 	}
 
-	// 경험치 초기화
-	UpdateExperienceTxt();
+	// 물고기 개수 초기화 ****************************
+	UpdateFishNumTxt();
 }
 
 
 void AfishWidgetActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 
 }
 
@@ -71,27 +76,28 @@ void  AfishWidgetActor::ReleaseFish()
 // Keep 눌렀을 때 실행되는 함수
 void  AfishWidgetActor::KeepFish()
 {
-	//위젯을 숨긴다.
-	if (ui)
+	
+	if (ui != nullptr)
 	{
-		//ui->SetVisibility(ESlateVisibility::Collapsed);
-		Destroy();
+		// ********* 진행중 ********
+		
+		//물고기 숫자 업데이트 (GameMode에서 점수 가져와서 바인딩)
+		 	if (fish && ui->txt_experience)
+		 	{
+		 		UpdateFishNumTxt();
+				
+				Destroy();
+			}
 	}
 
-//경험치 올린다.
-// 	if (fish)
-// 	{
-// 		fish->Experience += 50;
-// 		UpdateExperienceTxt();
-// 	}
 }
 
-// 경험치 텍스트 업데이트 함수
-void AfishWidgetActor::UpdateExperienceTxt()
+void AfishWidgetActor::UpdateFishNumTxt()
 {
-// 	if (ui->txt_experience && fish)
-// 	{
-// 		FString ExperienceTxt = FString::Printf(TEXT("%d"), fish->Experience);
-// 		ui->txt_experience->SetText(FText::FromString(ExperienceTxt));
-// 	}
+
+	FString FishNumtxt = FString::Printf(TEXT("%d"), gameMode->currScore);
+	ui->txt_experience->SetText(FText::FromString(FishNumtxt));
+		
+	
 }
+

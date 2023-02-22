@@ -14,6 +14,7 @@
 #include "Bait.h"
 #include "Kismet/GameplayStatics.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
+#include "FishPlayer.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -121,10 +122,14 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 	if (fishArray.Num() == 0)
 // 	{
 // 		return;
+// 
+//		else 
+//		{
+    		//물고기를 배열에 담는다.
+// 	          fishArray.Add(me);
+//		}
 // 	}
 // 
-// 		//물고기를 배열에 담는다.
-// 		fishArray.Add(me);
 // 
 // 	if (target->bBait)
 // 	{
@@ -144,12 +149,13 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 // 		//fishArray.RemoveAt(0);
 // 
 // 
-// 		// 미끼와의 최단거리 구하기 ******************
-// 		//FindDistance();
 // 	}
+ 		// 미끼와의 최단거리 구하기 ******************
+ 		FindDistance();
 
 }
 
+//
 //  void UFish_FSM::ControlRotation(float DeltaTime)
 //  {
 //  	currentTime += DeltaTime * direction;
@@ -168,32 +174,33 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 //  
 //   }
 
-// void UFish_FSM::FindDistance()
-// {
-// 	// 타겟과의 거리를 구한다.
-// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABait::StaticClass(), targetclass);
-// 
-// 	target = Cast<ABait>(targetclass[0]);
-// 	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
-// 
-// 	for (int32 i = 1; i < targetclass.Num(); i++)
-// 	{
-// 		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
-// 		{
-// 			UE_LOG(LogTemp,Warning, TEXT("%s"), *(targetclass[i]->GetName()));
-// 			
-// 			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
-// 
-// 			if (min > distance)
-// 			{
-// 				//NewDistace를 가진 미끼를 target으로 설정한다.
-// 				target = Cast<ABait>(targetclass[i]);
-// 				min = distance;
-// 
-// 			}
-// 		}
-// 	}
-// }
+
+// 최단거리 구하는 함수
+void UFish_FSM::FindDistance()
+{
+	// 타겟과의 거리를 구한다.
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABait::StaticClass(), targetclass);
+
+	target = Cast<ABait>(targetclass[0]);
+	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
+
+	for (int32 i = 1; i < targetclass.Num(); i++)
+	{
+		if (targetclass[i]->GetName().Contains(TEXT("Bait")))
+		{
+
+			distance = FVector::Distance(targetclass[i]->GetActorLocation(), me->GetActorLocation());
+
+			if (min > distance)
+			{
+				//NewDistace를 가진 미끼를 target으로 설정한다.
+				target = Cast<ABait>(targetclass[i]);
+				min = distance;
+
+			}
+		}
+	}
+}
 
 
 
@@ -238,14 +245,10 @@ void UFish_FSM::UpdateFastSwim()
 	if (target->bBaitReady && !target->bBait)
 	{
 		if (dir.Length() > moveRange)
-		{
-			
+		{	
 			//ai->MoveToLocation(target->GetActorLocation());
-			ai->MoveToLocation(target->GetActorLocation(), -1, false);
-			
-
+			ai->MoveToLocation(target->GetActorLocation(), -1, false);	
 		}
-
 	}
 // 	else if (target->fish != me)
 // 	{
@@ -343,13 +346,8 @@ void UFish_FSM::UpdateDie()
 	//머터리얼 색을 꺼라
 	me->ColorOff();
 
-	//추가*****
-	//bIsDead = true;
-
-// 	if (bIsDead)
-// 	{
-// 		ShowWidget();
-// 	}
+	// 플레이어의 위젯 호출 ************
+	fishPlayer->bOpenUI = true;
 }
 
 
@@ -367,21 +365,6 @@ bool UFish_FSM::IsWaitComplete(float delayTime)
 		return false;
 	}
 }
-
-
-// void UFish_FSM::ShowWidget()
-// {
-// 	FString WidgetPath = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Fish/BP_FishUI.BP_FishUI_C'");
-// 	UUserWidget* mywidget = CreateWidget<UUserWidget>(GetWorld(),TEXT("WidgetPath"));
-// 	if (mywidget)
-// 	{
-//		//플레이어 카메라에 위젯을 붙이고 싶다.
-// 		mywidget->AddToViewport();
-// 		mywidget->Initialize();
-// 	}
-//}
-
-
 
 bool UFish_FSM::IsTargetTrace()
 {
@@ -479,7 +462,7 @@ void UFish_FSM::MoveToPos(FVector pos)
 
 void UFish_FSM::UpdateReturnPos()
 {
-	// 처음 위치로 가서 도착하면 Idle로 전환.
+	// 처음 위치로 가서 도착하면 SlowSwim로 전환.
 	MoveToPos(randPos);
 
 }

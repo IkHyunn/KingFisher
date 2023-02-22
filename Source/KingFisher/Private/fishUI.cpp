@@ -4,17 +4,16 @@
 #include "fishWidgetActor.h"
 #include "Fish.h"
 #include "Fish_FSM.h"
+#include "Kismet/GameplayStatics.h"
+#include "FishPlayer.h"
 
 void UfishUI::NativeConstruct()
 {
 	btn_Release->OnPressed.AddDynamic(this, &UfishUI::Release);
 	btn_Keep->OnPressed.AddDynamic(this, &UfishUI::Keep);
 
-	//**********Ãß°¡ ***********
-// 	if (fish)
-// 	{
-// 		fish->OnFishDeath().AddDynamic(this, &UfishUI::OnFishDeathHandler);
-// 	}
+	player = Cast <AFishPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+
 }
 
 void UfishUI::Release()
@@ -27,19 +26,4 @@ void UfishUI::Keep()
 	fishUIActor->KeepFish();
 }
 
-
-
-
-// void UfishUI::OnFishDeathHandler()
-// {
-// 	//UI ¶ç¿ì±â
-// 	if (fishfsm->bIsDead)
-// 	{
-// 		UfishUI* fishUI = CreateWidget<UfishUI>(GetWorld(), fishfsm->bIsDead);
-// 		if (fishUI)
-// 		{
-// 			fishUI->AddToViewport();
-// 		}
-// 	}
-// }
 

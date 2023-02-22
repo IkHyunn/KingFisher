@@ -21,6 +21,7 @@
 #include "WidgetPointerComponent.h"
 #include <UMG/Public/Components/WidgetComponent.h>
 #include "MenuUIActor.h"
+#include "fishWidgetActor.h"
 
 
 // Sets default values
@@ -97,13 +98,12 @@ AFishPlayer::AFishPlayer()
 	}
 
 
-	//물고기 UI 컴포넌트
-// 	ConstructorHelpers::FClassFinder<UChildActorComponent> tempchild (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishUIActor.BP_fishUIActor_C'"));
-// 	if (tempchild.Succeeded())
-// 	{
-// 		childActorComp = tempchild.Class;
-// 	}
-
+	//물고기 UI
+	ConstructorHelpers::FClassFinder<AfishWidgetActor> tempfishUI (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishUIActor.BP_fishUIActor_C'"));
+	if (tempfishUI.Succeeded())
+	{
+		fish_Ui=tempfishUI.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -160,6 +160,13 @@ void AFishPlayer::Tick(float DeltaTime)
 // 
 // 	FVector RightP = RightP0 + (RightHor+RightVer)*500*DeltaTime;
 // 	rightController->SetRelativeLocation(RightP);
+
+	//fishUI 함수 호출
+	if (bOpenUI)
+	{
+		SpawnfishUi();
+		bOpenUI = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -186,6 +193,18 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	compMove->SetupPlayerInputComponent(enhancedInputComponent);
 	compGrab->SetupPlayerInputComponent(enhancedInputComponent);
 	compPointer->SetupPlayerInputComponent(enhancedInputComponent);
+}
+
+//*********************** (수정중) **************************//
+void AFishPlayer::SpawnfishUi()
+{
+	FVector widgetLoc = GetActorLocation()+ camera->GetForwardVector() * 100.0f;
+	FRotator trans = FRotator(0, 180,0);
+
+	// fish_UI widget을 스폰 (위치, 방향)
+	GetWorld()->SpawnActor<AfishWidgetActor> (fish_Ui, widgetLoc, trans);
+	
+
 }
 
 void AFishPlayer::OpenMenu()
@@ -283,16 +302,6 @@ void AFishPlayer::ThrowBait()
 		compGrab->fishingRod->bBobberFloat = false;
 		bFishing = false;
 
-
-		// 낚시대를 당겼을 때, ui를 호출한다.
-		/*if (	)*/
-		//{ 
-			FVector camLoc = camera->GetForwardVector()*100.0f;
-			if (childActorComp)
-			{
-				childActorComp->SetVisibility(true);
-			}
-		//}
 	}
 }
 
