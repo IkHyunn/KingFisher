@@ -93,6 +93,8 @@ public:
 	bool bFishing = false;
 	bool bReeling = false;
 	bool bReleasing = false;
+	bool timerOpen = false;
+	bool bFinishOpen = false;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABait> baitFactory;
@@ -112,6 +114,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* menuWidgetComp;
 
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* timerWidgetComp;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AFinishUIActor> finishUI;
+
+	class AFisherGameModeBase* currGameMode;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* sc_ThrowFishing;
+
 	float LeftH;
 	float LeftV;
 	float RightH;
@@ -119,6 +132,7 @@ public:
 
 public:
 	void OpenMenu();
+	void OpenTimer();
 	void ThrowReady();
 	void ThrowRelease();
 	void DrawBaitLine();
@@ -131,6 +145,8 @@ public:
 	void InputLeftVertical(float value);
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
+
+	void OpenFinishUI();
 
 	// UI component
 	UPROPERTY(EditAnywhere)

@@ -5,6 +5,8 @@
 #include <Components/BoxComponent.h>
 #include "FishBait.h"
 #include "FishingRod.h"
+#include <Sound/SoundCue.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AWaterSurface::AWaterSurface()
@@ -14,6 +16,12 @@ AWaterSurface::AWaterSurface()
 
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Surface Collision"));
 	SetRootComponent(compBox);
+
+	ConstructorHelpers::FObjectFinder<USoundCue>tempbaitsplash(TEXT("/Script/Engine.SoundCue'/Game/Resources/Sound/sc_FOL_BaitSplash.sc_FOL_BaitSplash'"));
+	if (tempbaitsplash.Succeeded())
+	{
+		sc_BaitSplash = tempbaitsplash.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -41,6 +49,7 @@ void AWaterSurface::OnWaterSurface(UPrimitiveComponent* OverlappedComponent, AAc
  		{
 			fishingRod->bobberMesh->SetSimulatePhysics(false);
 			fishingRod->bobberMesh->SetWorldRotation(FRotator(0));
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), sc_BaitSplash, fishingRod->bobberMesh->GetComponentLocation());
 			fishingRod->bBobberFloat = true;
 			UE_LOG(LogTemp,Warning,TEXT("Bobber Overlapped"));
 		}
