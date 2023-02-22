@@ -50,6 +50,7 @@ void ABait::Tick(float DeltaTime)
 		{
 			if (fish->fsm->currHP > 0)
 			{
+			UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
 				fish->fsm->ReceiveBait();
 
 			}

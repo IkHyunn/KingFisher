@@ -66,10 +66,11 @@ void UFish_FSM::BeginPlay()
 
 
 	// 입질 시스템 ********************* (물었을 때)
-//  	if (target != nullptr)
-//  	{
-// 		
-// 		//myLoc = FVector::IsNormalized(-1*(target->GetActorLocation()- me->GetActorLocation()));
+//   	if (target != nullptr)
+//   	{
+//  		
+// 		myLoc = -(target->GetActorLocation() - me->GetActorLocation());
+// 		myLoc.Normalize();
 // 		//myLoc = FVector::GetSafeNormal(target->GetActorLocation() - me->GetActorLocation());
 // 		//myLoc = target->GetActorLocation()*(-1.0f);
 // 		
@@ -77,7 +78,7 @@ void UFish_FSM::BeginPlay()
 //  		endLoc = startLoc + me->GetActorLocation();
 // 
 // 		
-// 	}
+ //	}
 
 }
 
@@ -117,45 +118,55 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 
  	// 입질 시스템_ 호출 **************처음 걸린 물고기만
-	if (fishArray.Num() == 0)
-	{
-		return;
-	}
-	if (target->bBait)
-	{
-		//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
-		fishArray[0]->SetActorLocation();
-		// 배열에서 첫번째 물고기 활성화
-		fishArray[0]->SetActive(true);
-
-		startLoc = target->GetActorLocation();
-		endLoc = startLoc + me->GetActorLocation();
-
-		ControlRotation(DeltaTime);
-	}
-
-	// 미끼와의 최단거리 구하기
-	/*FindDistance()*/;
-}
-
-
-void UFish_FSM::ControlRotation(float DeltaTime)
-{
-	currentTime += DeltaTime * direction;
-
-	if (currentTime <= 0)
-	{
-		direction = 1;
-	}
-
-	if (currentTime >= 1)
-	{
-		direction = -1;
-	}
-
-	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+// 	if (fishArray.Num() == 0)
+// 	{
+// 		return;
+// 	}
+// 
+// 		//물고기를 배열에 담는다.
+// 		fishArray.Add(me);
+// 
+// 	if (target->bBait)
+// 	{
+// 		//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
+// 		//myLoc = fishArray[0]->GetActorLocation();
+// 
+// 		// 배열에서 첫번째 물고기 활성화
+// 		//fishArray[0]->SetActive(true);
+// 
+// 		startLoc = target->GetActorLocation();
+// 		endLoc = startLoc + myLoc*500;
+// 
+// 		//함수 호출
+// 		ControlRotation(DeltaTime);
+// 
+// 		// 0번째에서 빼기
+// 		//fishArray.RemoveAt(0);
+// 
+// 
+// 		// 미끼와의 최단거리 구하기 ******************
+// 		//FindDistance();
+// 	}
 
 }
+
+//  void UFish_FSM::ControlRotation(float DeltaTime)
+//  {
+//  	currentTime += DeltaTime * direction;
+// 	
+//  	if (currentTime <= 0)
+//  	{
+//  		direction = 1;
+//  	}
+// 	 
+//  	if (currentTime >= 1)
+//  	{
+//  		direction = -1;
+//  	}
+//  
+//  	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+//  
+//   }
 
 // void UFish_FSM::FindDistance()
 // {
@@ -182,7 +193,7 @@ void UFish_FSM::ControlRotation(float DeltaTime)
 // 			}
 // 		}
 // 	}
-//}
+// }
 
 
 
@@ -190,7 +201,7 @@ void UFish_FSM::UpdateSlowSwim()
 {
 
 	//미끼를 쫓아갈 수 있나
-		if (IsWaitComplete(3))
+		if (IsWaitComplete(4))
 		{
 			// 현재 상태를 Swim으로 한다.
 			ChangeState(EFishState::Swim);		

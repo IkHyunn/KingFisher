@@ -157,7 +157,7 @@ public:
 	 void Navigation();
 
 	 // 입질 시스템 **********
-	void ControlRotation(float DeltaTime);
+	//void ControlRotation(float DeltaTime);
 
 	 // 입질
 	 float currentTime = 0.0f;
@@ -166,12 +166,9 @@ public:
 	 float direction = 1;
 	 float speed = 0.02f;
 	 FVector myLoc;
-	 /*********************/
+	 /***************( 추가 )******/
 	 UPROPERTY(EditAnywhere)
 	 TArray <class AFish*> fishArray;
-
-	 UPROPERTY(EditAnywhere)
-	 TArray <AActor*> collapsLocArray;
 
 	 //***************
 
@@ -185,7 +182,7 @@ public:
 	 float NewDistance;
 
 	 //타겟과의 거리 구하기
-	 /*void FindDistance();*/
+	/* void FindDistance();*/
 
 	 // 추가 ****
 	 bool bIsDead = false;
