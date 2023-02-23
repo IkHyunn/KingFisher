@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include <HeadMountedDisplayTypes.h>
+#include "FinishUIActor.h"
 #include "FishPlayer.generated.h"
 
 UCLASS()
