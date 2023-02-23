@@ -117,9 +117,11 @@ public:
 
 	// 최대 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-	float maxHP = 1;
+	float maxHP = 3;
 
 	bool bBite = false;
+	bool bTrace;
+	FVector dir; 
 
 
 	// 느린헤엄 (대기)
@@ -161,7 +163,14 @@ public:
 	 void Navigation();
 
 	 // 입질 시스템 
-	void ControlRotation(float DeltaTime);
+	void BiteSystem(float DeltaTime);
+
+	//타겟과의 거리 구하기
+	void FindDistance();
+
+	// 미끼 
+	UPROPERTY(EditDefaultsOnly)
+	TArray <AActor*> targetclass;
 
 	 // 입질
 	 float currentTime = 0.0f;
@@ -175,8 +184,7 @@ public:
 	 float min;
 	 float NewDistance;
 
-	 //타겟과의 거리 구하기
-	void FindDistance();
+	 
 
 	 // 위젯 보여준다
 	 void ShowWidget();
@@ -187,13 +195,13 @@ public:
 
 	 bool bHit;
 
+	 // 미끼를 인지하지 않은 물고기
 	 UPROPERTY(EditAnywhere)
-	 TArray <class AFish*> fishArray;
+	 TArray <AActor*> fishArray;
 
-	 // 미끼 
-	 UPROPERTY(EditDefaultsOnly)
-	 TArray <AActor*> targetclass;
-
+	 // 미끼를 인지한 물고기
+	 UPROPERTY(EditAnywhere)
+	 TArray<AActor*> fishBaitArray;
 
 
 

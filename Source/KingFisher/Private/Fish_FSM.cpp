@@ -68,15 +68,6 @@ void UFish_FSM::BeginPlay()
 
 
 
-	// 입질 시스템 
-// 	if (target != nullptr)
-// 	{
-// 			startLoc = target->GetActorLocation();
-// 			endLoc = startLoc + me->GetActorLocation();
-// 
-// 	}
-
-
 }
 
 // Called every frame
@@ -114,50 +105,78 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		break;
 	}
 
-	if (target->bBait)
+
+	// 미끼와의 최단거리 구하기
+	FindDistance();
+
+
+	// 입질 시스템 
+	if (target != nullptr)
 	{
-		ControlRotation(DeltaTime);
+// 		startLoc = target->GetActorLocation();
+// 		endLoc = startLoc + me->GetActorLocation();
+
+		BiteSystem(DeltaTime);
 	}
 
 
-		// 미끼와의 최단거리 구하기
-		FindDistance();
+}
+void UFish_FSM::BiteSystem(float DeltaTime)
+{
+
+	// 입질 시스템_ 호출 *********************************************************
+	
 
 
 
- 	// 입질 시스템_ 호출 *********************************************************
-	if (fishArray.Num() == 0)
-	{
-		return;
-	}
-		else 
-		{
-    		  //물고기를 배열에 담는다.
-			  fishArray.Add(me);
 
-			if (target->bBait)
-			{
-				//미끼를 먹는 첫번쨰 물고기를 배열에 담고 위치를 저장.
-				myLoc = fishArray[0]->GetActorLocation();
-				
-				// 배열에서 첫번째 물고기 활성화
-				//fishArray[0]->SetActive(true);
-				
-				startLoc = targetclass[0]->GetActorLocation();
-				endLoc = startLoc + myLoc * 500;
+	
+// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFish::StaticClass(), fishArray);
+// 	me = Cast<AFish>(fishArray[0]);
+// 	shortest = FVector::Distance(fishArray[0]->GetActorLocation(), target->GetActorLocation());
+// 
+// 	for (int32 i = 1; i < fishArray.Num(); i++)
+// 	{
+// 		// 만약 BP_Fish를 포함한 모든 액터를 fishArray에 담는다면
+// 		if (fishArray[i]->GetName().Contains(TEXT("BP_Fish")))
+// 		{
+// 			// 거리를 구한다.
+// 			float Dist = FVector::Distance(fishArray[i]->GetActorLocation(), target->GetActorLocation());
+// 
+// 			if (shortest > Dist)
+// 			{
+// 				me = Cast<AFish>(fishArray[i]);
+// 				shortest = Dist;
+// 			}
+// 		}
+// 
+// 	}
+// 
+// 	startLoc = targetclass[0]->GetActorLocation();
+// 	endLoc = startLoc + fishArray[0]->GetActorLocation();
+// 
+// 
+// 	currentTime += DeltaTime * direction;
+// 
+// 	if (currentTime <= 0)
+// 	{
+// 		direction = 1;
+// 	}
+// 
+// 	if (currentTime >= 1)
+// 	{
+// 		direction = -1;
+// 	}
+// 
+// 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
+// 
+// 	// 물고기 0번째에서 빼기
+// 	fishArray.RemoveAt(0);
+// 
+// 	// 타겟 0번째 빼기
+// 	targetclass.RemoveAt(0);
 
 
-				// 물고기 0번째에서 빼기
-				fishArray.RemoveAt(0);
-
-				// 타겟 0번째 빼기
-				 targetclass.RemoveAt(0);
-
-			}
- 				
-		}
-
-		
 }
 
 // 물고기가 미끼와의 최단거리 구하는 함수
@@ -187,25 +206,7 @@ void UFish_FSM::FindDistance()
 	}
 }
 
- void UFish_FSM::ControlRotation(float DeltaTime)
- {
- 	currentTime += DeltaTime * direction;
-	
- 	if (currentTime <= 0)
- 	{
- 		direction = 1;
- 	}
-	 
- 	if (currentTime >= 1)
- 	{
- 		direction = -1;
- 	}
  
- 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
- 
-  }
-
-
 
 void UFish_FSM::UpdateSlowSwim()
 {
@@ -222,9 +223,10 @@ void UFish_FSM::UpdateSlowSwim()
 
 void UFish_FSM::UpdateSwim()
 {
+		bTrace = IsTargetTrace();
 
 		// 미끼를 쫓아갈 수 있나
-		if (IsTargetTrace())
+		if (bTrace)
 		{
 			ChangeState(EFishState::FastSwim);
 		}
@@ -241,7 +243,7 @@ void UFish_FSM::UpdateFastSwim()
 {
 
 	// 타겟 방향 (dir)
-	FVector dir = target->GetActorLocation() - me->GetActorLocation();
+	dir = target->GetActorLocation() - me->GetActorLocation();
 	float dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 
 
@@ -251,6 +253,12 @@ void UFish_FSM::UpdateFastSwim()
 		{	
 			//ai->MoveToLocation(target->GetActorLocation());
 			ai->MoveToLocation(target->GetActorLocation(), -1, false);	
+
+			if (dir.Length() < eatableRange)
+			{
+				//상태를 Attack 으로 변경
+				ChangeState(EFishState::Eat);
+			}
 		}
 	}
 // 	else if (target->fish != me)
@@ -263,9 +271,7 @@ void UFish_FSM::UpdateFastSwim()
 
 void UFish_FSM::UpdateEat()
 {
-// 	*********추가 ************//
-// 		ChangeState(EFishState::Swim);
-// 		UE_LOG(LogTemp, Warning, TEXT("UPDATE EATTT "));
+	ChangeState(EFishState::EatDelay);
 }
 
 
@@ -275,11 +281,11 @@ void UFish_FSM::UpdateEatDelay()
 	if (currTime > EatDelayTime)
 	{
 		currTime = 0;
-		anim->bEatPlay = true;
 
-		UE_LOG(LogTemp, Warning, TEXT("EAT DELAYYY"));
+		UE_LOG(LogTemp, Warning, TEXT("EAT DELAYYY Timeee"));
 
-		FVector dir = target->GetActorLocation() - me->GetActorLocation();
+		 dir = target->GetActorLocation() - me->GetActorLocation();
+
 		if (dir.Length() < eatableRange)
 		{
 			bBite = true;

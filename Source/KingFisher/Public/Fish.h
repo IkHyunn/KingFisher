@@ -88,13 +88,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grapDistance = 1.0f;
 
+	// 미끼에 닿았는지 확인하는 변수****************
+	void isTouched(bool IsTouch);
 
-	//죽었을 떄 UI호출 *********************************(추가)*******
-	/*DECLARE_DYNAMIC_DELEGATE(FOnFishDeath);*/
-
-// 	UFUNCTION(BlueprintCallable)
-// 	void OnFishDeath();
+	UPROPERTY(EditAnywhere)
+	class AFish* me;
 	
-
-
 };

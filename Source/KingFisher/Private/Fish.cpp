@@ -63,6 +63,7 @@ AFish::AFish()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
+
 }
 
 
@@ -92,7 +93,6 @@ AFish::AFish()
 
 		//Outline - 머터리얼 인스턴스
 		outlineMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-
 
 	}
 
@@ -128,9 +128,10 @@ void AFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/// **********추가 ****************
-// 	if(fsm->bIsDead)
-// 	OnFishDeath().Broadcast();
+
+	//미끼에 닿는 물고기 체크 함수 *****************************
+//	isTouched();
+	
 }
 
 // Called to bind functionality to input
@@ -173,5 +174,56 @@ void AFish::Overlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
 		}	
 	}	
 }
+
+
+
+// void AFish::isTouched(bool IsTouch)
+// {
+// 	
+// 	// 물고기 수
+// 	const int num = 15; 
+// 	// 물고기 배열 초기화
+// 	 me[num];
+// 
+// 	// 물고기 배열 초기화
+// 	for (int i = 0; i < num; i++)
+// 	{	
+// 		// 0 또는 1의 랜덤 값 생성
+// 		bool touched = (rand() % 2 == 0); 
+// 		// 물고기 생성 및 배열에 추가
+// 		me[i] = me (touched);
+// 	}
+// 
+// 	// 미끼에 닿은 물고기와 닿지 않은 물고기 배열 선언
+// 	AFish* touchedFish[num];
+// 	AFish* untouchedFish[num];
+// 	int numTouchedFish = 0;
+// 	int numUntouchedFish = 0;
+// 
+// 	// 물고기 분류
+// 	for (int i = 0; i < num; i++)
+// 	{
+// 		if (me[i]->isTouched())
+// 		{
+// 			touchedFish[numTouchedFish] = me[i];
+// 			numTouchedFish++;
+// 		}
+// 		else 
+// 		{
+// 			untouchedFish[numUntouchedFish] = me[i];
+// 			numUntouchedFish++;
+// 		}
+// 	}
+// 
+// 	// 물고기 배열 해제
+// 	for (int i = 0; i < num; i++)
+// 	{
+// 		delete me[i];
+// 	}
+// 
+// 	return 0;
+// 
+// 
+// }
 
 
