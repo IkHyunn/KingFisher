@@ -131,19 +131,6 @@ AFishPlayer::AFishPlayer()
 	{
 		castSound = tempcastingsound.Object;
 	}
-
-// 	ConstructorHelpers::FObjectFinder<UAudioComponent>tempreelsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Reeling.FOL_Reeling'"));
-// 	if (tempreelsound.Succeeded())
-// 	{
-// 		reelingSound = tempreelsound.Object;
-// 	}
-
-	//¹°°í±â UI
-	ConstructorHelpers::FClassFinder<AfishWidgetActor> tempfishUI (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishwidgetActor.BP_fishwidgetActor_C'"));
-	if (tempfishUI.Succeeded())
-	{
-		fish_Ui=tempfishUI.Class;
-	}
 }
 
 // Called when the game starts or when spawned
