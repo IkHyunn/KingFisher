@@ -13,6 +13,8 @@
 #include "Bait.h"
 #include "Materials//MaterialInterface.h"
 #include <Components/BoxComponent.h>
+#include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFish::AFish()

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Sound/SoundBase.h"
 #include "Fish.generated.h"
 
 UCLASS()

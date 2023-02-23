@@ -132,9 +132,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USoundBase* castSound;
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* catchfishSound;
+
 	// fish_UI
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AfishWidgetActor> fish_Ui;
+
+	float currTime =0;
 
 	bool bCatch = false; 
 

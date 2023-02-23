@@ -13,6 +13,7 @@
 #include "FisherGameModeBase.h"
 #include "UMG/Public/Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 
 
@@ -21,18 +22,25 @@ AfishWidgetActor::AfishWidgetActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 스크린
 	screenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Screen"));
 	screenComp->SetupAttachment(RootComponent);
 
+	//위젯 컴포넌트 
 	widgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Component"));
-	widgetComp->SetupAttachment(RootComponent);
+	SetRootComponent(widgetComp);
 
-	ConstructorHelpers::FClassFinder<UUserWidget> tempui(TEXT(""));
-	if (tempui.Succeeded())
-	{
-		widgetComp->SetWidgetClass(tempui.Class);
-		widgetComp->SetWidgetSpace(EWidgetSpace::World);
-	}
+	//사운드 
+	popupsound = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound Component"));
+	popupsound->bAutoActivate = false;
+	popupsound->SetupAttachment(RootComponent);
+
+// 	ConstructorHelpers::FClassFinder<UUserWidget> tempui(TEXT(""));
+// 	if (tempui.Succeeded())
+// 	{
+// 		widgetComp->SetWidgetClass(tempui.Class);
+// 		widgetComp->SetWidgetSpace(EWidgetSpace::World);
+// 	}
 }
 
 
@@ -62,6 +70,30 @@ void AfishWidgetActor::BeginPlay()
 void AfishWidgetActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 사운드 
+	currentTime += DeltaTime;
+
+	if (currentTime > 1.5)
+	{
+		if (!soundStart)
+		{
+			if (!ui->bPopUpEnd)
+			{
+				popupsound->Play();
+				soundStart = true;
+			}
+		}
+		currentTime = 0;
+	}
+
+	if (soundStart)
+	{
+		if (ui->bPopUpEnd)
+		{
+			popupsound->Stop();
+		}
+	}
 
 }
 
@@ -103,6 +135,6 @@ void AfishWidgetActor::UpdateFishNumTxt()
 	FString FishNumtxt = FString::Printf(TEXT("%d"), gameMode->currScore);
 	ui->txt_experience->SetText(FText::FromString(FishNumtxt));
 		
-	
+	//ui->txt_experience->SetText(FText::AsNumber(ui->currScore));
 }
 
