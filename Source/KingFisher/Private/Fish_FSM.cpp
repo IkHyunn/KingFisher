@@ -160,7 +160,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		
 }
 
-// 최단거리 구하는 함수
+// 물고기가 미끼와의 최단거리 구하는 함수
 void UFish_FSM::FindDistance()
 {
 	// 타겟과의 거리를 구한다.
