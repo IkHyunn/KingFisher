@@ -34,8 +34,8 @@ void ABait::NotifyActorBeginOverlap(AActor* OtherActor)
 	fish = Cast<AFish>(OtherActor);
 	if (fish != nullptr)
 	{
-		bBait = true;
-
+		fish->bBait = true;
+		//fish->fsm->BiteFunction();
 	
 	}
 }

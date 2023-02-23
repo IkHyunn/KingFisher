@@ -113,68 +113,19 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// 입질 시스템 
 	if (target != nullptr)
 	{
-// 		startLoc = target->GetActorLocation();
-// 		endLoc = startLoc + me->GetActorLocation();
+ 		startLoc = target->GetActorLocation();
+ 		endLoc = startLoc + me->GetActorLocation();
 
 		BiteSystem(DeltaTime);
 	}
 
 
 }
+
+// 입질시스템
 void UFish_FSM::BiteSystem(float DeltaTime)
 {
 
-	// 입질 시스템_ 호출 *********************************************************
-	
-
-
-
-
-	
-// 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFish::StaticClass(), fishArray);
-// 	me = Cast<AFish>(fishArray[0]);
-// 	shortest = FVector::Distance(fishArray[0]->GetActorLocation(), target->GetActorLocation());
-// 
-// 	for (int32 i = 1; i < fishArray.Num(); i++)
-// 	{
-// 		// 만약 BP_Fish를 포함한 모든 액터를 fishArray에 담는다면
-// 		if (fishArray[i]->GetName().Contains(TEXT("BP_Fish")))
-// 		{
-// 			// 거리를 구한다.
-// 			float Dist = FVector::Distance(fishArray[i]->GetActorLocation(), target->GetActorLocation());
-// 
-// 			if (shortest > Dist)
-// 			{
-// 				me = Cast<AFish>(fishArray[i]);
-// 				shortest = Dist;
-// 			}
-// 		}
-// 
-// 	}
-// 
-// 	startLoc = targetclass[0]->GetActorLocation();
-// 	endLoc = startLoc + fishArray[0]->GetActorLocation();
-// 
-// 
-// 	currentTime += DeltaTime * direction;
-// 
-// 	if (currentTime <= 0)
-// 	{
-// 		direction = 1;
-// 	}
-// 
-// 	if (currentTime >= 1)
-// 	{
-// 		direction = -1;
-// 	}
-// 
-// 	me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime));
-// 
-// 	// 물고기 0번째에서 빼기
-// 	fishArray.RemoveAt(0);
-// 
-// 	// 타겟 0번째 빼기
-// 	targetclass.RemoveAt(0);
 
 
 }
@@ -261,17 +212,13 @@ void UFish_FSM::UpdateFastSwim()
 			}
 		}
 	}
-// 	else if (target->fish != me)
-// 	{
-// 		ChangeState(EFishState::ReturnPos);
-// 	}
 
 }
 
 
 void UFish_FSM::UpdateEat()
 {
-	ChangeState(EFishState::EatDelay);
+	//ChangeState(EFishState::EatDelay);
 }
 
 
@@ -299,7 +246,7 @@ void UFish_FSM::UpdateEatDelay()
 		{
 			if (bBite == false)
 			{
-				ChangeState(EFishState::Swim);
+				ChangeState(EFishState::SlowSwim);
 			}
 		}
 	}
@@ -313,12 +260,6 @@ void UFish_FSM::ReceiveBait()
 	{
 		ChangeState(EFishState::Damaged);
 
-// 		if (bBaitReady == false)
-// 		{
-// 		// 물고기 입질시스템  *********************************
-// 		//ControlRotation(DeltatTime);
-
-		//}
 	}
 	else
 	{
@@ -332,9 +273,19 @@ void UFish_FSM::UpdateDamaged()
 
 	UE_LOG(LogTemp, Warning, TEXT("!!!!!! DAMAGE!!!!!!"));
 
+//  	currTime += GetWorld()->DeltaTimeSeconds;
+//  	if (currTime > EatDelayTime)
+//  	{
+	
+	//왔다갔다 Lerp 넣는다.
 	ChangeState(EFishState::Swim);
+
+	currTime = 0;
 	target->bBaitReady = false;
 	target->bBait = false;
+
+	//}
+
 
 }
 
@@ -387,45 +338,6 @@ bool UFish_FSM::IsTargetTrace()
 	float angle = UKismetMathLibrary::DegAcos(dotValue);
 
 
-	//방법 2- Sweep 방식
-// 	if (angle < 40 && dirP.Length() < traceRange)
-// 	{
-// 
-// 		return true; 
-// 	}
-
-//*******************
-// 	FVector StartLoc = me->GetActorLocation();
-// 	FVector EndLoc = target->GetActorLocation();
-// 	FHitResult hitInfo;
-// 	FString profileName = FString (TEXT("DETECT"));
-// 	FCollisionQueryParams params;
-// 	params.AddIgnoredActor(me);
-// 
-// 	
-// 	if (angle < 40 && dirP.Length() < traceRange)
-// 	{
-// 
-// 	bHit = GetWorld()->SweepSingleByProfile(hitInfo, startLoc, endLoc, FQuat::Identity, TEXT("DETECT"),
-// 		FCollisionShape::MakeSphere(Dest), params) ;
-// 	
-// 		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
-// 		if (bHit && target != nullptr)
-// 		{	
-// 			UE_LOG(LogTemp, Warning, TEXT("FAST SWIMMM"))
-// 			if (hitInfo.GetActor()->GetName().Contains(TEXT("Bait")))
-// 			{
-// 				UE_LOG(LogTemp, Warning, TEXT("DETECTION!!!"))
-// 				return true;
-// 			}
-// 		
-// 		}
-// 
-//		
-		// 그렇지 않으면 false로 전환
-	//    return false;
-// 	}
-// 
 	//Linetrace
 	FVector StartLoc = me->GetActorLocation();
 	FVector EndLoc = target->GetActorLocation();

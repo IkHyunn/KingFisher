@@ -55,6 +55,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UFish_FSM* fsm; 
 
+	// 미끼
+	UPROPERTY(EditAnywhere)
+	class ABait* bait;
+
 	//Fish  활성  or  비활성
 	void SetActive(bool bActive);
 
@@ -88,8 +92,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grapDistance = 1.0f;
 
-	// 미끼에 닿았는지 확인하는 변수****************
-	void isTouched(bool IsTouch);
+	//미끼에 닿았는지 확인
+	bool bBait;
 
 	UPROPERTY(EditAnywhere)
 	class AFish* me;
