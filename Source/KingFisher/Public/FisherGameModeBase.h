@@ -22,10 +22,10 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite)
-	int32 minute = 0;
+	int32 minute = 1;
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 second = 20;
+	int32 second = 0;
 
 	int32 currScore = 0;
 

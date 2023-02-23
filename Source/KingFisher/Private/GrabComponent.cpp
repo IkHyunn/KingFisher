@@ -106,39 +106,40 @@ void UGrabComponent::LeftIndexAction(const struct FInputActionValue& value)
 void UGrabComponent::LeftGrabFish()
 {
 	leftanim->posePoint = 1;
-// 	FVector startPos = player->leftHand->GetComponentLocation();
-// 
-// 	FHitResult hitinfo;
-// 	FCollisionQueryParams param;
-// 	param.AddIgnoredActor(player);
-// 
-// 	FCollisionObjectQueryParams objectParams;
-// 	objectParams.AddObjectTypesToQuery(ECC_GameTraceChannel3);
-// 
-// 	bool bHit = GetWorld()->SweepSingleByObjectType(hitinfo, startPos, startPos, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabDistance), param);
-// 
-// 	if (bHit && fish == nullptr)
-// 	{
-// 		fish = Cast<AFish>(hitinfo.GetActor());
-// 
-// 		if (hitinfo.GetActor()->GetName().Contains(TEXT("Fish")))
-// 		{
-// 			fish->AttachToComponent(player->leftHand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FishPos"));
-// 		}
-// 	}
+//  	FVector startPos = player->leftHand->GetComponentLocation();
+//  
+//  	FHitResult hitinfo;
+//  	FCollisionQueryParams param;
+//  	param.AddIgnoredActor(player);
+//  
+//  	FCollisionObjectQueryParams objectParams;
+//  	objectParams.AddObjectTypesToQuery(ECC_GameTraceChannel3);
+//  
+//  	bool bHit = GetWorld()->SweepSingleByObjectType(hitinfo, startPos, startPos, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabDistance), param);
+//  
+//  	if (bHit && fish == nullptr)
+//  	{
+//  		fish = Cast<AFish>(hitinfo.GetActor());
+//  
+//  		if (hitinfo.GetActor()->GetName().Contains(TEXT("Fish")))
+//  		{
+//  			fish->AttachToComponent(player->leftHand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FishPos"));
+// 			fish->GetCapsuleComponent()->SetSimulatePhysics(false);
+//  		}
+//  	}
 }
 
 void UGrabComponent::LeftReleaseFish()
 {
 	leftanim->posePoint = 0;
 
-// 	if (fish != nullptr)
-// 	{
-// 		fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-// 		fish->GetCapsuleComponent()->SetSimulatePhysics(true);
-// 		fish->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-// 		fish = nullptr;
-// 	}
+//  	if (fish != nullptr)
+//  	{
+//  		fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+//  		fish->GetCapsuleComponent()->SetSimulatePhysics(true);
+//  		fish->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+//  		fish = nullptr;
+//  	}
 }
 
 void UGrabComponent::LeftThumbAction()

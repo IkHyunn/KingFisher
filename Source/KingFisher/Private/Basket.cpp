@@ -102,29 +102,29 @@ void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 {
 	if (OtherActor != nullptr)
 	{
-// 		ABait* bait = Cast<ABait>(OtherActor);
-// 
-// 		if (OtherActor == bait)
-// 		{
-// 			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
-// 			gameMode = Cast<AFisherGameModeBase>(currMode);
-// 
-// 			gameMode->AddScore(1);
-// 			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
-// 		}
+		ABait* bait = Cast<ABait>(OtherActor);
 
-		AFish* fish = Cast<AFish>(OtherActor);
-
-		if (OtherActor == fish)
+		if (OtherActor == bait)
 		{
-			destroyFish = fish;
+			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+			gameMode = Cast<AFisherGameModeBase>(currMode);
 
- 			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
-	 		gameMode = Cast<AFisherGameModeBase>(currMode);
-
-	 		gameMode->AddScore(1);
- 			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+			gameMode->AddScore(1);
+			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
 		}
+
+// 		AFish* fish = Cast<AFish>(OtherActor);
+// 
+// 		if (OtherActor == fish)
+// 		{
+// 			destroyFish = fish;
+// 
+//  			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+// 	 		gameMode = Cast<AFisherGameModeBase>(currMode);
+// 
+// 	 		gameMode->AddScore(1);
+//  			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+// 		}
 	}
 }
 
