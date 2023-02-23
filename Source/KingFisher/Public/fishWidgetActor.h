@@ -41,6 +41,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFisherGameModeBase* gameMode;
 
+	// »ç¿îµå
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* popupsound;
+
+	float currentTime = 0;
+	bool soundStart = false;
+
+
 	void ReleaseFish();
 	void KeepFish();
 	void UpdateFishNumTxt();

@@ -17,6 +17,8 @@
 #include <PhysicsEngine/PhysicsConstraintComponent.h>
 #include "Bait.h"
 #include "Basket.h"
+#include "Fish.h"
+#include <Components/CapsuleComponent.h>
 
 // Sets default values for this component's properties
 UGrabComponent::UGrabComponent()
@@ -62,8 +64,8 @@ void UGrabComponent::SetupPlayerInputComponent(UEnhancedInputComponent* PlayerIn
 	PlayerInputComponent->BindAction(leftInputs[0], ETriggerEvent::Completed, this, &UGrabComponent::LeftGrabActionEnd);
 	PlayerInputComponent->BindAction(leftInputs[1], ETriggerEvent::Triggered, this, &UGrabComponent::LeftIndexAction);
 	PlayerInputComponent->BindAction(leftInputs[1], ETriggerEvent::Completed, this, &UGrabComponent::LeftIndexAction);
-	PlayerInputComponent->BindAction(leftInputs[2], ETriggerEvent::Triggered, this, &UGrabComponent::LeftPointAction);
-	PlayerInputComponent->BindAction(leftInputs[2], ETriggerEvent::Completed, this, &UGrabComponent::LeftPointActionEnd);
+	PlayerInputComponent->BindAction(leftInputs[2], ETriggerEvent::Triggered, this, &UGrabComponent::LeftGrabFish);
+	PlayerInputComponent->BindAction(leftInputs[2], ETriggerEvent::Completed, this, &UGrabComponent::LeftReleaseFish);
 	PlayerInputComponent->BindAction(leftInputs[3], ETriggerEvent::Triggered, this, &UGrabComponent::LeftThumbAction);
 	PlayerInputComponent->BindAction(leftInputs[3], ETriggerEvent::Completed, this, &UGrabComponent::LeftThumbActionEnd);
 
@@ -101,14 +103,43 @@ void UGrabComponent::LeftIndexAction(const struct FInputActionValue& value)
 	leftanim->poseIndexCurl = value.Get<float>();
 }
 
-void UGrabComponent::LeftPointAction()
+void UGrabComponent::LeftGrabFish()
 {
 	leftanim->posePoint = 1;
+//  	FVector startPos = player->leftHand->GetComponentLocation();
+//  
+//  	FHitResult hitinfo;
+//  	FCollisionQueryParams param;
+//  	param.AddIgnoredActor(player);
+//  
+//  	FCollisionObjectQueryParams objectParams;
+//  	objectParams.AddObjectTypesToQuery(ECC_GameTraceChannel3);
+//  
+//  	bool bHit = GetWorld()->SweepSingleByObjectType(hitinfo, startPos, startPos, FQuat::Identity, objectParams, FCollisionShape::MakeSphere(grabDistance), param);
+//  
+//  	if (bHit && fish == nullptr)
+//  	{
+//  		fish = Cast<AFish>(hitinfo.GetActor());
+//  
+//  		if (hitinfo.GetActor()->GetName().Contains(TEXT("Fish")))
+//  		{
+//  			fish->AttachToComponent(player->leftHand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FishPos"));
+// 			fish->GetCapsuleComponent()->SetSimulatePhysics(false);
+//  		}
+//  	}
 }
 
-void UGrabComponent::LeftPointActionEnd()
+void UGrabComponent::LeftReleaseFish()
 {
 	leftanim->posePoint = 0;
+
+//  	if (fish != nullptr)
+//  	{
+//  		fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+//  		fish->GetCapsuleComponent()->SetSimulatePhysics(true);
+//  		fish->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+//  		fish = nullptr;
+//  	}
 }
 
 void UGrabComponent::LeftThumbAction()
@@ -120,6 +151,7 @@ void UGrabComponent::LeftThumbActionEnd()
 {
 	leftanim->poseThumbUp = 0;
 }
+
 
 void UGrabComponent::RightGrabAction(const struct FInputActionValue& value)
 {
@@ -249,11 +281,13 @@ void UGrabComponent::LeftGrabObject(USkeletalMeshComponent* hand)
 					leftgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
 					leftgrabActor->bleftPickUp = true;
 				}
-				else if (leftgrabActor->GetName().Contains(TEXT("Fish")))
-				{
-					leftgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
-					leftgrabActor->bleftPickUp = true;
-				}
+// 				else if (leftgrabActor->GetName().Contains(TEXT("Fish")))
+// 				{
+// 					UE_LOG(LogTemp, Warning, TEXT("Grab"))
+// 					fish = Cast<AFish>(hitinfo.GetActor());
+// 					leftgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
+// 					leftgrabActor->bleftPickUp = true;
+// 				}
 				else if (leftgrabActor->GetName().Contains(TEXT("Feed")))
 				{
 					FActorSpawnParameters spawnParameters;
@@ -301,7 +335,6 @@ void UGrabComponent::RightReleaseObject(USkeletalMeshComponent* hand, FVector to
 
 		if (fishingRod != nullptr)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("Release"));
 			fishingRod->fishingRodMesh->SetSimulatePhysics(true);
 			rightgrabActor->brightPickUp = false;
 		}

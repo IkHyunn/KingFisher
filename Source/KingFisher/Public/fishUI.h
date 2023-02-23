@@ -17,6 +17,7 @@ class KINGFISHER_API UfishUI : public UUserWidget
 public:
 
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* btn_Release;
@@ -27,7 +28,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UTextBlock* txt_experience;
 
+	UPROPERTY(EditAnywhere)
+	class AFisherGameModeBase* currMode;
+
 	class AfishWidgetActor* fishUIActor; 
+
+	bool bPopUpEnd = false; 
+
+	float currTime = 0;
+
+	int32 Score;
 
 	UPROPERTY(EditAnywhere)
 	class AFishPlayer* player; 

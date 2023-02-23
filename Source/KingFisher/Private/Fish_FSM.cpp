@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "FishPlayer.h"
+#include "Sound/SoundBase.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -35,6 +36,13 @@ UFish_FSM::UFish_FSM()
 	if (tempMontage.Succeeded())
 	{
 		EatMontage = tempMontage.Object;
+	}
+
+	//사운드
+	ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_FishBite.FOL_FishBite'"));
+	if (tempSound.Succeeded())
+	{
+		fishSound = tempSound.Object;
 	}
 
 }
@@ -153,11 +161,8 @@ void UFish_FSM::BiteSystem(float DeltaTime)
 	
 		me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime/6));
 
-	
-
-
-
 }
+
 
 // 물고기가 미끼와의 최단거리 구하는 함수
 void UFish_FSM::FindDistance()
@@ -190,7 +195,6 @@ void UFish_FSM::FindDistance()
 }
 
  
-
 void UFish_FSM::UpdateSlowSwim()
 {
 
@@ -217,9 +221,7 @@ void UFish_FSM::UpdateSwim()
 		{
 			MoveToPos(randPos);
 		}
-
 }
-
 
 
 void UFish_FSM::UpdateFastSwim()
@@ -302,8 +304,9 @@ void UFish_FSM::ReceiveBait()
 
 void UFish_FSM::UpdateDamaged()
 {
-
 	UE_LOG(LogTemp, Warning, TEXT("!!!!!! DAMAGE!!!!!!"));
+
+	UGameplayStatics::PlaySound2D(GetWorld(), fishSound);
 
 //  	currTime += GetWorld()->DeltaTimeSeconds;
 //  	if (currTime > EatDelayTime)
@@ -321,6 +324,7 @@ void UFish_FSM::UpdateDamaged()
 
 }
 
+
 void UFish_FSM::UpdateDie()
 {
 	//물고기를 미끼에 붙인다.
@@ -332,7 +336,6 @@ void UFish_FSM::UpdateDie()
 	}
 	//머터리얼 색을 꺼라
 	me->ColorOff();
-
 	
 }
 
@@ -394,7 +397,6 @@ bool UFish_FSM::IsTargetTrace()
 void UFish_FSM::MoveToPos(FVector pos)
 {
 	// 해당 위치로
-
 	if (IsValid(ai))
 	{
 		EPathFollowingRequestResult::Type result = ai->MoveToLocation(pos);
@@ -407,11 +409,11 @@ void UFish_FSM::MoveToPos(FVector pos)
 	}
 }
 
+
 void UFish_FSM::UpdateReturnPos()
 {
 	// 처음 위치로 가서 도착하면 SlowSwim로 전환.
 	MoveToPos(randPos);
-
 }
 
 

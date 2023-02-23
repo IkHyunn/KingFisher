@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include <HeadMountedDisplayTypes.h>
+#include "FinishUIActor.h"
 #include "FishPlayer.generated.h"
 
 UCLASS()
@@ -93,6 +94,8 @@ public:
 	bool bFishing = false;
 	bool bReeling = false;
 	bool bReleasing = false;
+	bool timerOpen = false;
+	bool bFinishOpen = false;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABait> baitFactory;
@@ -109,15 +112,36 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetPointerComponent* compPointer;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* menuWidgetComp;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* timerWidgetComp;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AFinishUIActor> finishUI;
+
+	class AFisherGameModeBase* currGameMode;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* sc_ThrowFishing;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* reelingSound;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* castSound;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* catchfishSound;
 
 	// fish_UI
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AfishWidgetActor> fish_Ui;
 
+	float currTime =0;
+
 	bool bCatch = false; 
- 
 
 	float LeftH;
 	float LeftV;
@@ -126,6 +150,7 @@ public:
 
 public:
 	void OpenMenu();
+	void OpenTimer();
 	void ThrowReady();
 	void ThrowRelease();
 	void DrawBaitLine();
@@ -139,6 +164,10 @@ public:
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
 
-	
+
+	void OpenFinishUI();
+
+
+
 
 };

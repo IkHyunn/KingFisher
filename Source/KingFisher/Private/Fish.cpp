@@ -12,6 +12,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Bait.h"
 #include "Materials//MaterialInterface.h"
+#include <Components/BoxComponent.h>
+#include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFish::AFish()
@@ -59,6 +62,11 @@ AFish::AFish()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
+	// *****IH*****
+	// Box Collision »ý¼º
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Grab Collision"));
+	boxComp->SetupAttachment(RootComponent);
+	boxComp->SetCollisionObjectType(ECC_GameTraceChannel3);
 
 }
 

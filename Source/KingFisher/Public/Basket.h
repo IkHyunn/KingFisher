@@ -41,8 +41,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* compRoot;
 
-	UPROPERTY(EditAnywhere)
-	class AFish* fish;
+	class AActor* destroyFish = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* scorePos;

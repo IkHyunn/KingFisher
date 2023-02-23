@@ -21,7 +21,14 @@
 #include "WidgetPointerComponent.h"
 #include <UMG/Public/Components/WidgetComponent.h>
 #include "MenuUIActor.h"
+#include "TimerUI.h"
+#include <Components/CapsuleComponent.h>
+#include "FisherGameModeBase.h"
+#include <Sound/SoundCue.h>
+#include <Kismet/GameplayStatics.h>
+#include <Components/AudioComponent.h>
 #include "fishWidgetActor.h"
+
 
 
 // Sets default values
@@ -71,8 +78,9 @@ AFishPlayer::AFishPlayer()
 	rightHand->SetRelativeRotation(FRotator(25, 0, 90));
 	rightHand->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	menuPos = CreateDefaultSubobject<USceneComponent>(TEXT("bait Spawn Pos"));
+	menuPos = CreateDefaultSubobject<USceneComponent>(TEXT("FinishUI Spawn Pos"));
 	menuPos ->SetupAttachment(RootComponent);
+	menuPos->SetRelativeRotation(FRotator(0, 180, 0));
 
 	bUseControllerRotationPitch = true;
 
@@ -86,7 +94,7 @@ AFishPlayer::AFishPlayer()
 	teleportTrace->SetupAttachment(rightHand);
 
 
-	menuWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Start Widget Component"));
+	menuWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu Widget Component"));
 	menuWidgetComp -> SetupAttachment(RootComponent);
 	menuWidgetComp->SetVisibility(false);
 
@@ -97,13 +105,45 @@ AFishPlayer::AFishPlayer()
 		menuWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	}
 
+	timerWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Timer Widget Component"));
+	timerWidgetComp->SetupAttachment(leftController);
+	timerWidgetComp->SetVisibility(false);
 
-	//물고기 UI
-	ConstructorHelpers::FClassFinder<AfishWidgetActor> tempfishUI (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishwidgetActor.BP_fishwidgetActor_C'"));
-	if (tempfishUI.Succeeded())
+	ConstructorHelpers::FClassFinder<UUserWidget>temptimer(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/BluePrints/Widget/WG_Timer.WG_Timer_C'"));
+	if (temptimer.Succeeded())
 	{
-		fish_Ui=tempfishUI.Class;
+		timerWidgetComp->SetWidgetClass(temptimer.Class);
+		timerWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	}
+
+	ConstructorHelpers::FObjectFinder<USoundCue>tempthrowsound(TEXT("/Script/Engine.SoundCue'/Game/Resources/Sound/sc_FOL_ThrowFishingRod.sc_FOL_ThrowFishingRod'"));
+	if (tempthrowsound.Succeeded())
+	{
+		sc_ThrowFishing = tempthrowsound.Object;
+	}
+
+	reelingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("Reeling Sound Component"));
+	reelingSound->bAutoActivate = false;
+	reelingSound->SetupAttachment(GetMesh());
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempcastingsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Casting.FOL_Casting'"));
+	if (tempcastingsound.Succeeded())
+	{
+		castSound = tempcastingsound.Object;
+	}
+
+// 	ConstructorHelpers::FObjectFinder<UAudioComponent>tempreelsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Reeling.FOL_Reeling'"));
+// 	if (tempreelsound.Succeeded())
+// 	{
+// 		reelingSound = tempreelsound.Object;
+// 	}
+
+	ConstructorHelpers::FObjectFinder<USoundBase> tempcatchSound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_CatchFish_1.FOL_CatchFish_1'"));
+	if (tempcatchSound.Succeeded())
+	{
+		catchfishSound = tempcatchSound.Object;
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -119,6 +159,7 @@ void AFishPlayer::BeginPlay()
 
 	subSystem->AddMappingContext(myMapping, 0);
 	
+	currGameMode = Cast<AFisherGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -135,18 +176,44 @@ void AFishPlayer::Tick(float DeltaTime)
 	{
 		FVector P0 = compGrab->fishingRod->bobberMesh->GetComponentLocation();
 		FVector V = this->GetActorLocation()-P0;
+		FVector P = P0+V*DeltaTime;
 
-		compGrab->fishingRod->bobberMesh->SetWorldLocation(P0+V*DeltaTime);
+		if (compGrab->fishingRod->bBobberFloat)
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		}
+		else
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P));
+		}
 	}
 
 	if (bReleasing)
 	{
 		FVector P0 = compGrab->fishingRod->bobberMesh->GetComponentLocation();
 		FVector V = -(this->GetActorLocation()-P0);
+		FVector P = P0+V*DeltaTime;
 
-		compGrab->fishingRod->bobberMesh->SetWorldLocation(P0+V*DeltaTime);
+		if (compGrab->fishingRod->bBobberFloat)
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		}
+		else
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P));
+		}
 	}
 
+	if (currGameMode != nullptr)
+	{
+		if (currGameMode->bCountEnd)
+		{			
+			if(!bFinishOpen)
+			{
+				OpenFinishUI();
+			}
+		}
+	}
 // 	FVector LeftP0 = leftController->GetComponentLocation();
 // 	FVector LeftHor = leftController->GetRightVector()*LeftH;
 // 	FVector LeftVer = leftController->GetUpVector()*LeftV;
@@ -176,6 +243,7 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 // 	PlayerInputComponent->BindAxis(TEXT("righthandhorizontal"), this, &AFishPlayer::InputRightHorizontal);
 // 	PlayerInputComponent->BindAxis(TEXT("righthandvertical"), this, &AFishPlayer::InputRightVertical);
 	enhancedInputComponent->BindAction(leftInputs[0], ETriggerEvent::Started, this, &AFishPlayer::OpenMenu);
+	enhancedInputComponent->BindAction(leftInputs[1], ETriggerEvent::Started, this, &AFishPlayer::OpenTimer);
 
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Started, this, &AFishPlayer::ThrowReady);
 	enhancedInputComponent->BindAction(rightInputs[0], ETriggerEvent::Completed, this, &AFishPlayer::ThrowRelease);
@@ -193,14 +261,37 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AFishPlayer::OpenMenu()
 {
-//	GetWorld()->SpawnActor<AMenuUIActor>(AMenuUIActor::StaticClass(), menuPos->GetComponentLocation(), menuPos->GetComponentRotation());
-	if (menuWidgetComp->IsVisible() == false)
+	if (currGameMode != nullptr)
 	{
-		menuWidgetComp->SetVisibility(true);
+		if (menuWidgetComp->IsVisible() == false)
+		{
+			menuWidgetComp->SetVisibility(true);
+		}
+		else
+		{
+			menuWidgetComp->SetVisibility(false);
+		}
 	}
-	else
+}
+
+void AFishPlayer::OpenTimer()
+{
+	UTimerUI* timerUI = Cast<UTimerUI>(timerWidgetComp->GetWidget());
+
+	if (currGameMode != nullptr)
 	{
-		menuWidgetComp->SetVisibility(false);
+		if (!timerOpen)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Open"));
+			timerUI->PlayAnimation(timerUI->PopupTimer, 0.0f, 1);
+			timerOpen = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Close"));
+			timerUI->PlayAnimationReverse(timerUI->PopupTimer, 1);
+			timerOpen = false;
+		}
 	}
 }
 
@@ -271,6 +362,7 @@ void AFishPlayer::ThrowBait()
 		throwDirection.Normalize();
 		compGrab->fishingRod->bobberMesh->SetRelativeLocation(rightController->GetComponentLocation());
 		compGrab->fishingRod->bobberMesh->AddImpulse(throwDirection*500);
+		UGameplayStatics::PlaySound2D(GetWorld(),sc_ThrowFishing);
 		compGrab->fishingRod->pointConstraint->SetLinearXLimit(ELinearConstraintMotion::LCM_Free, 1000);
 		compGrab->fishingRod->pointConstraint->SetLinearYLimit(ELinearConstraintMotion::LCM_Free, 1000);
 		compGrab->fishingRod->pointConstraint->SetLinearZLimit(ELinearConstraintMotion::LCM_Free, 1000);
@@ -284,20 +376,26 @@ void AFishPlayer::ThrowBait()
 		compGrab->fishingRod->baitAttached = false;
 		compGrab->fishingRod->bobberMesh->SetSimulatePhysics(true);
 		compGrab->fishingRod->bBobberFloat = false;
+		UGameplayStatics::PlaySound2D(GetWorld(), castSound);
 		bFishing = false;
+
+		// 물고기 ui 
+		currTime += GetWorld()->DeltaTimeSeconds;
 
 		if (bCatch)
 		{
-			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 100.0f;
-			FRotator trans = FRotator(0, GetActorRotation().Yaw, 0);
-			
+			UGameplayStatics::PlaySound2D(GetWorld(), catchfishSound);
 
-			// fish_UI widget을 스폰 (위치, 방향)
+			if (currTime > 1.5)
+			{
+			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 100.0f;
+			FRotator trans = FRotator(0, GetActorRotation().Yaw +180, 0);
+			
 			GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
 			bCatch = false;
 
+			}
 		}
-
 	}
 }
 
@@ -317,10 +415,12 @@ void AFishPlayer::BaitReleasing()
 	if (!bReleasing && bFishing)
 	{
 		bReleasing = true;
+		reelingSound->Play();
 	}
 	else
 	{
 		bReleasing = false;
+		reelingSound->Stop();
 	}
 }
 
@@ -329,11 +429,22 @@ void AFishPlayer::BaitReeling()
 	if (!bReeling && bFishing)
 	{
 		bReeling = true;
+		reelingSound->Play();
 	}
 	else
 	{
 		bReeling = false;
+		reelingSound->Stop();
 	}
+}
+
+void AFishPlayer::OpenFinishUI()
+{
+	FVector openLoc = GetActorLocation()+GetActorForwardVector()*500;
+	FRotator openRot = FRotator(0, GetActorRotation().Yaw+180, 0);
+
+	GetWorld()->SpawnActor<AFinishUIActor>(finishUI, openLoc, openRot);
+	bFinishOpen = true;
 }
 
 // void AFishPlayer::InputLeftHorizontal(float value)

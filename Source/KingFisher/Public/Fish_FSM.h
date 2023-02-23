@@ -180,7 +180,6 @@ public:
 	 float direction = 1;
 	 float speed = 0.02f;
 
-
 	 float distance;
 	 float min;
 
@@ -195,6 +194,10 @@ public:
 
 	 // 위젯 보여준다
 	 void ShowWidget();
+
+	 //물고기 사운드 
+	 UPROPERTY(EditDefaultsOnly, Category = Sound)
+	class USoundBase* fishSound;
 
 	
 };

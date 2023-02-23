@@ -15,8 +15,27 @@ class KINGFISHER_API AFisherGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	AFisherGameModeBase();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	int32 minute = 1;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 second = 0;
+
 	int32 currScore = 0;
+
+	bool bCountEnd = false;
+	bool bGameEnd = false;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* mainBGM;
 
 public:
 	void AddScore(int32 value);
+	void CountDown();
 };
