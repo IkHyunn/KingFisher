@@ -304,8 +304,8 @@ void UFish_FSM::ReceiveBait()
 
 void UFish_FSM::UpdateDamaged()
 {
-
 	UE_LOG(LogTemp, Warning, TEXT("!!!!!! DAMAGE!!!!!!"));
+
 	UGameplayStatics::PlaySound2D(GetWorld(), fishSound);
 
 //  	currTime += GetWorld()->DeltaTimeSeconds;
