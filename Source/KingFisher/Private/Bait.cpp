@@ -57,20 +57,25 @@ void ABait::Tick(float DeltaTime)
 		}
 
 		currenttime += DeltaTime;
-		if (currenttime > 1)
+		if (currenttime > 5)
 		{
 			
-			if (bitingfish->fsm->currHP > 0)
+			if (bitingfish->fsm->currHP > 0 )
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
-				bitingfish->fsm->ReceiveBait();
+				if (bitingfish->fsm->currState == EFishState::Swim || bitingfish->fsm->currState == EFishState::FastSwim)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
+					bitingfish->fsm->ReceiveBait();
+					currenttime = 0;
+				}
+				}
 
 			}
-			currenttime = 0;
-		}
+			
 	}
-	else
+	else 
 	{
+		
 		// 또 다른 if조건으로 바꿔준다.
 		bBaitReady = true;
 		fish = nullptr;

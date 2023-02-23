@@ -113,10 +113,10 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// 입질 시스템 
 	if (target != nullptr)
 	{
-		if (me->bBait)
+		if (me->bBait && currState != EFishState::Die)
 		{
 		//매개변수 DeltaTime으로 속도 조절
-		BiteSystem(0.004);
+			BiteSystem(0.004);
 	
 		}
 		// 미끼에 닿지 않았다면
@@ -321,20 +321,14 @@ void UFish_FSM::UpdateDamaged()
 
 }
 
-
-
 void UFish_FSM::UpdateDie()
 {
-
 	//물고기를 미끼에 붙인다.
 	if (IsValid(target))
 	{
-		if (target->bBaitReady)
-		{
-			me->AttachToComponent(target->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
-		}
-		target->bBaitReady = false;
 
+		me->AttachToComponent(target->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
+		target->bBaitReady = false;
 	}
 	//머터리얼 색을 꺼라
 	me->ColorOff();
