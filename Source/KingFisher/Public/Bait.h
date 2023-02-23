@@ -45,6 +45,7 @@ public:
 
 	bool bAttached = false;
 
-
+	UPROPERTY(EditAnywhere)
+	class AFish* bitingfish;
 
 };

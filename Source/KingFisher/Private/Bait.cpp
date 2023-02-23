@@ -34,8 +34,12 @@ void ABait::NotifyActorBeginOverlap(AActor* OtherActor)
 	fish = Cast<AFish>(OtherActor);
 	if (fish != nullptr)
 	{
-		fish->bBait = true;
-		//fish->fsm->BiteFunction();
+		if(bitingfish == nullptr)
+		{
+			fish->bBait = true;
+			bitingfish = fish;
+	
+		}
 	
 	}
 }
@@ -45,15 +49,21 @@ void ABait::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 물고기 상호작용
-	if (bBait)
+	if (bitingfish !=nullptr && bitingfish->bBait)
 	{
+		if (bitingfish->fsm == nullptr)
+		{
+			return;
+		}
+
 		currenttime += DeltaTime;
 		if (currenttime > 1)
 		{
-			if (fish->fsm->currHP > 0)
+			
+			if (bitingfish->fsm->currHP > 0)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
-				fish->fsm->ReceiveBait();
+				bitingfish->fsm->ReceiveBait();
 
 			}
 			currenttime = 0;
@@ -61,6 +71,7 @@ void ABait::Tick(float DeltaTime)
 	}
 	else
 	{
+		// 또 다른 if조건으로 바꿔준다.
 		bBaitReady = true;
 		fish = nullptr;
 	}

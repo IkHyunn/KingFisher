@@ -113,18 +113,47 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// 입질 시스템 
 	if (target != nullptr)
 	{
- 		startLoc = target->GetActorLocation();
- 		endLoc = startLoc + me->GetActorLocation();
-
-		BiteSystem(DeltaTime);
+		if (me->bBait)
+		{
+		//매개변수 DeltaTime으로 속도 조절
+		BiteSystem(0.004);
+	
+		}
+		// 미끼에 닿지 않았다면
+		else
+		{
+			
+			//ChangeState(EFishState::SlowSwim);
+		}
 	}
-
-
 }
 
 // 입질시스템
 void UFish_FSM::BiteSystem(float DeltaTime)
 {
+	
+
+	//시작 위치
+	startLoc = target->GetActorLocation();
+	//종료 위치
+	endLoc = startLoc + me->GetActorLocation();
+
+
+	currentTime += DeltaTime * direction;
+	
+		if (currentTime <= 0)
+		{
+			direction = 1;
+		}
+	
+		if (currentTime >= 1)
+		{
+			direction = -1;
+		}
+	
+		me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime/6));
+
+	
 
 
 
@@ -138,6 +167,7 @@ void UFish_FSM::FindDistance()
 
 	target = Cast<ABait>(targetclass[0]);
 	min = FVector::Distance(targetclass[0]->GetActorLocation(), me->GetActorLocation());
+	int32 num = 0;
 
 	for (int32 i = 1; i < targetclass.Num(); i++)
 	{
@@ -151,10 +181,12 @@ void UFish_FSM::FindDistance()
 				//NewDistace를 가진 미끼를 target으로 설정한다.
 				target = Cast<ABait>(targetclass[i]);
 				min = distance;
-
+				num = i;
 			}
 		}
 	}
+
+
 }
 
  

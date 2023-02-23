@@ -37,7 +37,7 @@ AFish::AFish()
  	}
 
 	//Mesh 크기 세팅
-	GetMesh()->SetRelativeScale3D(FVector(8));
+	GetMesh()->SetRelativeScale3D(FVector(3));
 
 
 	//2. 애니메이션 클래스 세팅

@@ -176,24 +176,14 @@ public:
 	 float currentTime = 0.0f;
 	 FVector startLoc;
 	 FVector endLoc;
+	 FVector currLoc; 
 	 float direction = 1;
 	 float speed = 0.02f;
-	 FVector myLoc;
+
 
 	 float distance;
 	 float min;
-	 float NewDistance;
 
-	 
-
-	 // 위젯 보여준다
-	 void ShowWidget();
-
-	 // Sweep방식으로 쫓기
-	 UPROPERTY(EditAnywhere)
-	 float Dest = 200.0f;
-
-	 bool bHit;
 
 	 // 미끼를 인지하지 않은 물고기
 	 UPROPERTY(EditAnywhere)
@@ -203,11 +193,8 @@ public:
 	 UPROPERTY(EditAnywhere)
 	 TArray<AActor*> fishBaitArray;
 
-
-
-
-	 
+	 // 위젯 보여준다
+	 void ShowWidget();
 
 	
-	 
 };

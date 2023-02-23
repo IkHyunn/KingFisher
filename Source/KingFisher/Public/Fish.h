@@ -93,6 +93,7 @@ public:
 	float grapDistance = 1.0f;
 
 	//미끼에 닿았는지 확인
+	UPROPERTY (EditAnywhere)
 	bool bBait;
 
 	UPROPERTY(EditAnywhere)
