@@ -131,6 +131,13 @@ AFishPlayer::AFishPlayer()
 	{
 		castSound = tempcastingsound.Object;
 	}
+
+// 	ConstructorHelpers::FObjectFinder<UAudioComponent>tempreelsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Reeling.FOL_Reeling'"));
+// 	if (tempreelsound.Succeeded())
+// 	{
+// 		reelingSound = tempreelsound.Object;
+// 	}
+
 }
 
 // Called when the game starts or when spawned
