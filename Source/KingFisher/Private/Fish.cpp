@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Bait.h"
 #include "Materials//MaterialInterface.h"
+#include <Components/BoxComponent.h>
 
 // Sets default values
 AFish::AFish()
@@ -41,7 +42,7 @@ AFish::AFish()
  	}
 
 	//Mesh 크기 세팅
-	GetMesh()->SetRelativeScale3D(FVector(8));
+	GetMesh()->SetRelativeScale3D(FVector(3));
 
 
 	//2. 애니메이션 클래스 세팅
@@ -62,7 +63,11 @@ AFish::AFish()
 	//5.  AutoPossess AI 설정 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-
+	// *****IH*****
+	// Box Collision 생성
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Grab Collision"));
+	boxComp->SetupAttachment(RootComponent);
+	boxComp->SetCollisionObjectType(ECC_GameTraceChannel3);
 }
 
 

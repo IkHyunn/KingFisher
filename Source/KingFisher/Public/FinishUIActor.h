@@ -27,6 +27,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* finishWidgetComp;
 
+	class UFinishUI* finishUI;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* caculateSound;
+
+	float currentTime = 0;
+
+	bool caculateSoundStart = false;
+
 public:
 	void GameRestart();
 	void GoToMain();

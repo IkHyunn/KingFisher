@@ -40,6 +40,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	TArray<TSubclassOf<class UFish_Anim>> FishAnimation;
 
+	// *****IH*****
+	// 물고기를 잡을 콜리전 박스 생성
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* boxComp;
+
 
 	// 랜덤  SkeletalMesh 담을 함수
 	void RandMesh ();

@@ -26,6 +26,7 @@
 #include "FisherGameModeBase.h"
 #include <Sound/SoundCue.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/AudioComponent.h>
 
 
 // Sets default values
@@ -119,6 +120,22 @@ AFishPlayer::AFishPlayer()
 		sc_ThrowFishing = tempthrowsound.Object;
 	}
 
+	reelingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("Reeling Sound Component"));
+	reelingSound->bAutoActivate = false;
+	reelingSound->SetupAttachment(GetMesh());
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempcastingsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Casting.FOL_Casting'"));
+	if (tempcastingsound.Succeeded())
+	{
+		castSound = tempcastingsound.Object;
+	}
+
+// 	ConstructorHelpers::FObjectFinder<UAudioComponent>tempreelsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Reeling.FOL_Reeling'"));
+// 	if (tempreelsound.Succeeded())
+// 	{
+// 		reelingSound = tempreelsound.Object;
+// 	}
+
 	//물고기 UI 컴포넌트
 // 	ConstructorHelpers::FClassFinder<UChildActorComponent> tempchild (TEXT("/Script/Engine.Blueprint'/Game/BluePrints/Widget/BP_fishUIActor.BP_fishUIActor_C'"));
 // 	if (tempchild.Succeeded())
@@ -160,7 +177,14 @@ void AFishPlayer::Tick(float DeltaTime)
 		FVector V = this->GetActorLocation()-P0;
 		FVector P = P0+V*DeltaTime;
 
-		compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		if (compGrab->fishingRod->bBobberFloat)
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		}
+		else
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P));
+		}
 	}
 
 	if (bReleasing)
@@ -169,14 +193,24 @@ void AFishPlayer::Tick(float DeltaTime)
 		FVector V = -(this->GetActorLocation()-P0);
 		FVector P = P0+V*DeltaTime;
 
-		compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		if (compGrab->fishingRod->bBobberFloat)
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P.X, P.Y, P0.Z));
+		}
+		else
+		{
+			compGrab->fishingRod->bobberMesh->SetWorldLocation(FVector(P));
+		}
 	}
 
-	if (currGameMode->bCountEnd)
+	if (currGameMode != nullptr)
 	{
-		if(!bFinishOpen)
-		{
-			OpenFinishUI();
+		if (currGameMode->bCountEnd)
+		{			
+			if(!bFinishOpen)
+			{
+				OpenFinishUI();
+			}
 		}
 	}
 // 	FVector LeftP0 = leftController->GetComponentLocation();
@@ -223,13 +257,16 @@ void AFishPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AFishPlayer::OpenMenu()
 {
-	if (menuWidgetComp->IsVisible() == false)
+	if (currGameMode != nullptr)
 	{
-		menuWidgetComp->SetVisibility(true);
-	}
-	else
-	{
-		menuWidgetComp->SetVisibility(false);
+		if (menuWidgetComp->IsVisible() == false)
+		{
+			menuWidgetComp->SetVisibility(true);
+		}
+		else
+		{
+			menuWidgetComp->SetVisibility(false);
+		}
 	}
 }
 
@@ -237,15 +274,20 @@ void AFishPlayer::OpenTimer()
 {
 	UTimerUI* timerUI = Cast<UTimerUI>(timerWidgetComp->GetWidget());
 
-	if (!timerOpen)
+	if (currGameMode != nullptr)
 	{
-		timerUI->PlayAnimation(timerUI->PopupTimer, 0.0f, 1);
-		timerOpen = true;
-	}
-	else
-	{
-		timerUI->PlayAnimationReverse(timerUI->PopupTimer, 1);
-		timerOpen = false;
+		if (!timerOpen)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Open"));
+			timerUI->PlayAnimation(timerUI->PopupTimer, 0.0f, 1);
+			timerOpen = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Close"));
+			timerUI->PlayAnimationReverse(timerUI->PopupTimer, 1);
+			timerOpen = false;
+		}
 	}
 }
 
@@ -330,6 +372,7 @@ void AFishPlayer::ThrowBait()
 		compGrab->fishingRod->baitAttached = false;
 		compGrab->fishingRod->bobberMesh->SetSimulatePhysics(true);
 		compGrab->fishingRod->bBobberFloat = false;
+		UGameplayStatics::PlaySound2D(GetWorld(), castSound);
 		bFishing = false;
 
 
@@ -361,10 +404,12 @@ void AFishPlayer::BaitReleasing()
 	if (!bReleasing && bFishing)
 	{
 		bReleasing = true;
+		reelingSound->Play();
 	}
 	else
 	{
 		bReleasing = false;
+		reelingSound->Stop();
 	}
 }
 
@@ -373,10 +418,12 @@ void AFishPlayer::BaitReeling()
 	if (!bReeling && bFishing)
 	{
 		bReeling = true;
+		reelingSound->Play();
 	}
 	else
 	{
 		bReeling = false;
+		reelingSound->Stop();
 	}
 }
 

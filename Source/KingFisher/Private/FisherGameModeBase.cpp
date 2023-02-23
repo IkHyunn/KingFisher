@@ -5,14 +5,21 @@
 #include "FishPlayer.h"
 #include <Kismet/GameplayStatics.h>
 
+#include <Components/AudioComponent.h>
+
 AFisherGameModeBase::AFisherGameModeBase()
 {
+	mainBGM = CreateDefaultSubobject<UAudioComponent>(TEXT("Main BGM Component"));
+	mainBGM->SetupAttachment(RootComponent);
 }
 
 
 void AFisherGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	mainBGM->bAutoActivate=true;
+
 	FTimerHandle timer;
 	GetWorldTimerManager().SetTimer(timer, this, &AFisherGameModeBase::CountDown, 1.0f, true, 0.0f);
 }
@@ -46,5 +53,10 @@ void AFisherGameModeBase::CountDown()
 				second = 59;
 			}
 		}
+	}
+
+	if (bGameEnd)
+	{
+		mainBGM->FadeOut(0.5f, 0);
 	}
 }

@@ -12,8 +12,12 @@ void UTimerUI::NativeConstruct()
 	Super::NativeConstruct();
 
 	currMode = Cast<AFisherGameModeBase>(GetWorld()->GetAuthGameMode());
-	text_Minutes->SetText(FText::AsNumber(currMode->minute));
-	text_Seconds->SetText(FText::AsNumber(currMode->second));
+
+	if (currMode != nullptr)
+	{
+		text_Minutes->SetText(FText::AsNumber(currMode->minute));
+		text_Seconds->SetText(FText::AsNumber(currMode->second));
+	}
 
 	player = Cast<AFishPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
@@ -22,19 +26,22 @@ void UTimerUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	text_Minutes->SetText(FText::AsNumber(currMode->minute));
-	text_Seconds->SetText(FText::AsNumber(currMode->second));
-
-	if (currMode->minute == 0 && currMode->second <= 30)
+	if (currMode != nullptr)
 	{
-		currentTime += InDeltaTime;
-		if (currentTime > delayTime)
+		text_Minutes->SetText(FText::AsNumber(currMode->minute));
+		text_Seconds->SetText(FText::AsNumber(currMode->second));
+
+		if (currMode->minute == 0 && currMode->second <= 30)
 		{
-			if (currMode->second > 0)
+			currentTime += InDeltaTime;
+			if (currentTime > delayTime)
 			{
-				TimeWarning();
+				if (currMode->second > 0)
+				{
+					TimeWarning();
+				}
+				currentTime = 0;
 			}
-			currentTime = 0;
 		}
 	}
 

@@ -62,6 +62,12 @@ void ABasket::Tick(float DeltaTime)
 		lidLocZ = FMath::Clamp(compScene->GetComponentRotation().Roll+lidLoc.Z, -40, 50);
 		compScene->SetRelativeRotation(FRotator(0, 0, lidLocZ));
 	}
+
+	if (destroyFish != nullptr)
+	{
+		destroyFish->Destroy();
+		destroyFish=nullptr;
+	}
 }
 
 void ABasket::OnGrab(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -96,15 +102,28 @@ void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 {
 	if (OtherActor != nullptr)
 	{
-		ABait* bait = Cast<ABait>(OtherActor);
+// 		ABait* bait = Cast<ABait>(OtherActor);
+// 
+// 		if (OtherActor == bait)
+// 		{
+// 			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+// 			gameMode = Cast<AFisherGameModeBase>(currMode);
+// 
+// 			gameMode->AddScore(1);
+// 			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+// 		}
 
-		if (OtherActor == bait)
+		AFish* fish = Cast<AFish>(OtherActor);
+
+		if (OtherActor == fish)
 		{
-			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
-			gameMode = Cast<AFisherGameModeBase>(currMode);
+			destroyFish = fish;
 
-			gameMode->AddScore(1);
-			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+ 			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+	 		gameMode = Cast<AFisherGameModeBase>(currMode);
+
+	 		gameMode->AddScore(1);
+ 			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
 		}
 	}
 }

@@ -5,12 +5,17 @@
 #include "FisherGameModeBase.h"
 #include <UMG/Public/Components/TextBlock.h>
 #include <UMG/Public/Components/Button.h>
+#include "FinishUIActor.h"
 
 void UFinishUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	currMode = Cast<AFisherGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (currMode != nullptr)
+	{
+		currMode->bGameEnd = true;
+	}
 	
 	fishScore->SetText(FText::AsNumber(finalScore));
 
@@ -23,15 +28,27 @@ void UFinishUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (!bIncreasingEnd)
+	if (currMode != nullptr)
 	{
-		currentTime += InDeltaTime;
-
-		if (currentTime > 1.5)
+		if (!bIncreasingEnd)
 		{
+			if (finalScore == currMode->currScore)
+			{
+				finalScore = currMode->currScore;
+				bIncreasingEnd = true;
+				currentTime = 0;
+			}
+		
 			if (finalScore < currMode->currScore)
 			{
-				finalScore += finalScore + 1;
+				currentTime += InDeltaTime;
+
+				if (currentTime > 1.5)
+				{
+					finalScore += finalScore + 1;
+
+					fishScore->SetText(FText::AsNumber(finalScore));
+				}
 			}
 			else
 			{
@@ -39,8 +56,6 @@ void UFinishUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 				bIncreasingEnd = true;
 				currentTime = 0;
 			}
-
-			fishScore->SetText(FText::AsNumber(finalScore));
 		}
 	}
 }

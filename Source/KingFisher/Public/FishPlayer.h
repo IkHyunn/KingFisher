@@ -111,7 +111,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UWidgetPointerComponent* compPointer;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	class UWidgetComponent* menuWidgetComp;
 
 	UPROPERTY(EditAnywhere)
@@ -124,6 +124,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* sc_ThrowFishing;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* reelingSound;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* castSound;
 
 	float LeftH;
 	float LeftV;

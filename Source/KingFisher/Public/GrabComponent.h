@@ -53,19 +53,14 @@ public:
 	bool bLeftGrab = false;
 	bool shootReady = false;
 
-	UPROPERTY(EditAnywhere)
 	class APickUpActor* rightgrabActor = nullptr;
-
-	UPROPERTY(EditAnywhere)
 	class APickUpActor* leftgrabActor = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	class AActor* grabActor = nullptr;
 	class AFishingRod* fishingRod = nullptr;
-
-	UPROPERTY(EditAnywhere)
 	class ABasket* basket = nullptr;
-
 	class ABait* bait;
+	class AFish* fish;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABait> baitFactory;
@@ -78,8 +73,8 @@ public:
 	void LeftGrabAction(const struct FInputActionValue& value);
 	void LeftGrabActionEnd(const struct FInputActionValue& value);
 	void LeftIndexAction(const struct FInputActionValue& value);
-	void LeftPointAction();
-	void LeftPointActionEnd();
+	void LeftGrabFish();
+	void LeftReleaseFish();
 	void LeftThumbAction();
 	void LeftThumbActionEnd();
 

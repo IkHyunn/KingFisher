@@ -5,6 +5,8 @@
 #include <UMG/Public/Components/WidgetComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include "FinishUI.h"
+#include <Components/AudioComponent.h>
+#include "FisherGameModeBase.h"
 
 // Sets default values
 AFinishUIActor::AFinishUIActor()
@@ -14,6 +16,10 @@ AFinishUIActor::AFinishUIActor()
 
 	finishWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Finish Widget Component"));
 	SetRootComponent(finishWidgetComp);
+
+	caculateSound = CreateDefaultSubobject<UAudioComponent>(TEXT("Caculate Sound Component"));
+	caculateSound->bAutoActivate = false;
+	caculateSound->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -23,7 +29,8 @@ void AFinishUIActor::BeginPlay()
 	
 	if (finishWidgetComp != nullptr)
 	{
-		UFinishUI* finishUI = Cast<UFinishUI>(finishWidgetComp->GetWidget());
+		finishUI = Cast<UFinishUI>(finishWidgetComp->GetWidget());
+
 		if (finishUI != nullptr)
 		{
 			finishUI->finishUIActor = this;
@@ -36,11 +43,33 @@ void AFinishUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
+		currentTime += DeltaTime;
+
+		if (currentTime > 1.5)
+		{
+			if (!caculateSoundStart)
+			{
+				if(!finishUI->bIncreasingEnd)
+				{
+					caculateSound->Play();
+					caculateSoundStart = true;
+				}
+			}
+			currentTime = 0;
+		}
+
+		if (caculateSoundStart)
+		{
+			if (finishUI->bIncreasingEnd)
+			{
+				caculateSound->Stop();
+			}
+		}
+} 
 
 void AFinishUIActor::GameRestart()
 {
-	UGameplayStatics::OpenLevel(GetWorld(),TEXT("TestLevel"));
+	UGameplayStatics::OpenLevel(GetWorld(),TEXT("map_village_day"));
 }
 
 void AFinishUIActor::GoToMain()

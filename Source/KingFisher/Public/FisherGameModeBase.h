@@ -30,6 +30,11 @@ public:
 	int32 currScore = 0;
 
 	bool bCountEnd = false;
+	bool bGameEnd = false;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* mainBGM;
+
 public:
 	void AddScore(int32 value);
 	void CountDown();
