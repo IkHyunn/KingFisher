@@ -131,6 +131,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USoundBase* castSound;
 
+	// fish_UI
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AfishWidgetActor> fish_Ui;
+
+	bool bCatch = false; 
+
 	float LeftH;
 	float LeftV;
 	float RightH;
@@ -152,10 +158,10 @@ public:
 	void InputRightHorizontal(float value);
 	void InputRightVertical(float value);
 
+
 	void OpenFinishUI();
 
-	// UI component
-	UPROPERTY(EditAnywhere)
-	class UChildActorComponent* childActorComp;
+
+
 
 };

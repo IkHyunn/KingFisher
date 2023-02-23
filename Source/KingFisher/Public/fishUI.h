@@ -29,12 +29,8 @@ public:
 
 	class AfishWidgetActor* fishUIActor; 
 
-	//추가
-// 	class AFish* fish;
-// 
-// 	class UFish_FSM* fishfsm;
-
-private: 
+	UPROPERTY(EditAnywhere)
+	class AFishPlayer* player; 
 
 	//바인딩 함수
 	UFUNCTION()
@@ -42,8 +38,5 @@ private:
 
 	UFUNCTION()
 	void Keep();
-
-	//추가
-	/*void OnFishDeathHandler();*/
 	
 }; 

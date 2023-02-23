@@ -60,6 +60,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UFish_FSM* fsm; 
 
+	// 미끼
+	UPROPERTY(EditAnywhere)
+	class ABait* bait;
+
 	//Fish  활성  or  비활성
 	void SetActive(bool bActive);
 
@@ -93,16 +97,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grapDistance = 1.0f;
 
-	//경험치 
+	//미끼에 닿았는지 확인
+	UPROPERTY (EditAnywhere)
+	bool bBait;
+
 	UPROPERTY(EditAnywhere)
-	int32 Experience;
-
-	//죽었을 떄 UI호출 *********************************(추가)*******
-	/*DECLARE_DYNAMIC_DELEGATE(FOnFishDeath);*/
-
-// 	UFUNCTION(BlueprintCallable)
-// 	void OnFishDeath();
+	class AFish* me;
 	
-
-
 };

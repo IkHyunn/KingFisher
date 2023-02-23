@@ -104,6 +104,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ABait* bait;
 
+	//플레이어
+	UPROPERTY(EditAnywhere)
+	class AFishPlayer* fishPlayer;
+
 	// 감지 범위 
 	float detectRange = 300.0f;
 
@@ -116,6 +120,8 @@ public:
 	float maxHP = 3;
 
 	bool bBite = false;
+	bool bTrace;
+	FVector dir; 
 
 
 	// 느린헤엄 (대기)
@@ -156,40 +162,39 @@ public:
 	 // 네비게이션 함수
 	 void Navigation();
 
-	 // 입질 시스템
-	/* void ControlRotation(float DeltaTime);*/
+	 // 입질 시스템 
+	void BiteSystem(float DeltaTime);
+
+	//타겟과의 거리 구하기
+	void FindDistance();
+
+	// 미끼 
+	UPROPERTY(EditDefaultsOnly)
+	TArray <AActor*> targetclass;
 
 	 // 입질
 	 float currentTime = 0.0f;
 	 FVector startLoc;
 	 FVector endLoc;
+	 FVector currLoc; 
 	 float direction = 1;
+	 float speed = 0.02f;
 
-	 // 미끼 
-	 UPROPERTY(EditDefaultsOnly)
-	 TArray <AActor*> targetclass;
 
 	 float distance;
 	 float min;
-	 float NewDistance;
 
-	 //타겟과의 거리 구하기
-	 /*void FindDistance();*/
 
-	 // 추가 ****
-	 bool bIsDead = false;
+	 // 미끼를 인지하지 않은 물고기
+	 UPROPERTY(EditAnywhere)
+	 TArray <AActor*> fishArray;
+
+	 // 미끼를 인지한 물고기
+	 UPROPERTY(EditAnywhere)
+	 TArray<AActor*> fishBaitArray;
 
 	 // 위젯 보여준다
 	 void ShowWidget();
 
-	 // Sweep방식으로 쫓기
-	 UPROPERTY(EditAnywhere)
-	 float Dest = 200.0f;
-
-	 bool bHit;
-
-	 
-
 	
-	 
 };

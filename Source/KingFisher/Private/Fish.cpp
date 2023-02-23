@@ -27,10 +27,6 @@ AFish::AFish()
 	capsuleComp->SetupAttachment(RootComponent);
 	capsuleComp->SetRelativeScale3D(FVector(15.0f, 2.0f, 0.3f));
 	capsuleComp->SetRelativeLocation(FVector(0.0f,0.0f, 50.0f));
-	//capsuleComp->SetCollisionProfileName (TEXT("FishTonguePreset"));
-// 	capsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
-// 	capsuleComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-// 	capsuleComp->SetGenerateOverlapEvents(true);
 
 
 
@@ -63,11 +59,13 @@ AFish::AFish()
 	//5.  AutoPossess AI 설정 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+
 	// *****IH*****
 	// Box Collision 생성
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Grab Collision"));
 	boxComp->SetupAttachment(RootComponent);
 	boxComp->SetCollisionObjectType(ECC_GameTraceChannel3);
+
 }
 
 
@@ -97,7 +95,6 @@ AFish::AFish()
 
 		//Outline - 머터리얼 인스턴스
 		outlineMat = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-
 
 	}
 
@@ -133,9 +130,6 @@ void AFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/// **********추가 ****************
-// 	if(fsm->bIsDead)
-// 	OnFishDeath().Broadcast();
 }
 
 // Called to bind functionality to input
@@ -178,5 +172,9 @@ void AFish::Overlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
 		}	
 	}	
 }
+
+
+
+
 
 

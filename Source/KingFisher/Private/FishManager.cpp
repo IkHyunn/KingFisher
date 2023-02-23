@@ -52,7 +52,6 @@ void AFishManager::CreateFish()
 			GetWorld()->SpawnActor<AFish>(fishFactory,
 				spawnPoints[Index]->GetActorLocation(), FRotator(0));
 
-			UE_LOG(LogTemp, Warning, TEXT("%d"), SpawnCount)
 
 				// 다시 랜덤 시간에 CreateFish 함수가 호출되도록 타이머 설정
 				float createTime = FMath::RandRange(minTime, maxTime);
