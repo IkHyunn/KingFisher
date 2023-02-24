@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		class USceneComponent* throwPos;
 
+	UPROPERTY(EditAnywhere)
+		class USoundBase* baitattachSound;
+
 	bool baitAttached = false;
 
 	bool bBobberFloat = false;

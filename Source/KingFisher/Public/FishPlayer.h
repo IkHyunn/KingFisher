@@ -134,7 +134,7 @@ public:
 
 	//물고기 사운드
 	UPROPERTY(EditAnywhere)
-	class USoundBase* catchfishSound;
+	class USoundCue* catchfishSound;
 
 	// fish_UI
 	UPROPERTY(EditAnywhere)

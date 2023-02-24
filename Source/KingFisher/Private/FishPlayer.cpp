@@ -139,7 +139,7 @@ AFishPlayer::AFishPlayer()
 // 	}
 
 	//물고기 사운드
-	ConstructorHelpers::FObjectFinder<USoundBase> tempcatchSound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_CatchFish_1.FOL_CatchFish_1'"));
+	ConstructorHelpers::FObjectFinder<USoundCue> tempcatchSound(TEXT("/Script/Engine.SoundCue'/Game/Resources/Sound/sc_CatchFish.sc_CatchFish'"));
 	if (tempcatchSound.Succeeded())
 	{
 		catchfishSound = tempcatchSound.Object;
@@ -386,7 +386,7 @@ void AFishPlayer::ThrowBait()
 
 		if (bCatch)
 		{
-			//UGameplayStatics::PlaySound2D(GetWorld(), catchfishSound);
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), catchfishSound, compGrab->fishingRod->bobberMesh->GetComponentLocation());
 
 			if (currTime > 1.5)
 			{
