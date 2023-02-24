@@ -41,6 +41,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFisherGameModeBase* gameMode;
 
+	int32 Score;
+
+	bool bPopUpEnd = false;
+
 	// »ç¿îµå
 	UPROPERTY(EditAnywhere)
 	class UAudioComponent* popupsound;

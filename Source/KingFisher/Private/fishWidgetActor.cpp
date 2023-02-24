@@ -24,11 +24,12 @@ AfishWidgetActor::AfishWidgetActor()
 
 	// 스크린
 	screenComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Screen"));
-	screenComp->SetupAttachment(RootComponent);
+	SetRootComponent(screenComp);
+	
 
 	//위젯 컴포넌트 
 	widgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Component"));
-	SetRootComponent(widgetComp);
+	widgetComp->SetupAttachment(RootComponent);
 
 	//사운드 
 	popupsound = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound Component"));
@@ -131,10 +132,14 @@ void  AfishWidgetActor::KeepFish()
 
 void AfishWidgetActor::UpdateFishNumTxt()
 {
-
-	FString FishNumtxt = FString::Printf(TEXT("%d"), gameMode->currScore);
-	ui->txt_experience->SetText(FText::FromString(FishNumtxt));
+	if (gameMode !=nullptr)
+	{
+		if (currentTime > 1.5)
+		{
+			Score = gameMode->currScore;
+			ui->txt_experience->SetText(FText::AsNumber(Score));
+		}
 		
-	//ui->txt_experience->SetText(FText::AsNumber(ui->currScore));
+	}	
 }
 
