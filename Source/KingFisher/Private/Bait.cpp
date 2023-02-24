@@ -51,13 +51,20 @@ void ABait::Tick(float DeltaTime)
 	// 물고기 상호작용
 	if (bitingfish !=nullptr && bitingfish->bBait)
 	{
+
+		if (fish != bitingfish)
+		{
+			fish->fsm->UpdateReturnPos();
+
+		}
+
 		if (bitingfish->fsm == nullptr)
 		{
 			return;
 		}
 
 		currenttime += DeltaTime;
-		if (currenttime > 5)
+		if (currenttime > 1)
 		{
 			
 			if (bitingfish->fsm->currHP > 0 )
@@ -66,6 +73,7 @@ void ABait::Tick(float DeltaTime)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("BAITTT"));
 					bitingfish->fsm->ReceiveBait();
+
 					currenttime = 0;
 				}
 				}
@@ -81,3 +89,10 @@ void ABait::Tick(float DeltaTime)
 		fish = nullptr;
 	}
 }
+
+
+// if (bitingfish != nullptr && bitingfish->bBait)
+// {
+// 	//다른 물고기들이 타겟을 찾는다.
+// 	 fish->fsm->UpdateSlowSwim();
+// }

@@ -123,6 +123,8 @@ AFish::AFish()
 		// fsm  활성/ 비활성
 		fsm->SetActive(bActive);
 
+		
+
 	}
 
 

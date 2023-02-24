@@ -115,6 +115,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 
 
+
 	// 미끼와의 최단거리 구하기
 	FindDistance();
 
