@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +5,7 @@
 #include "fishUI.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class KINGFISHER_API UfishUI : public UUserWidget
@@ -17,26 +15,35 @@ class KINGFISHER_API UfishUI : public UUserWidget
 public:
 
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	class UButton* btn_Release;
+		class UButton* btn_Release;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	class UButton* btn_Keep;
+		class UButton* btn_Keep;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	class UTextBlock* txt_experience;
-
-	class AfishWidgetActor* fishUIActor; 
+		class UTextBlock* txt_experience;
 
 	UPROPERTY(EditAnywhere)
-	class AFishPlayer* player; 
+		class AFisherGameModeBase* currMode;
 
-	//바인딩 함수
-	UFUNCTION()
-	void Release();
+	class AfishWidgetActor* fishUIActor;
+
+	bool bPopUpEnd = false;
+
+	float currTime = 0;
+
+	int32 Score;
+
+	UPROPERTY(EditAnywhere)
+		class AFishPlayer* player;
 
 	UFUNCTION()
-	void Keep();
-	
-}; 
+		void Release();
+
+	UFUNCTION()
+		void Keep();
+
+};
