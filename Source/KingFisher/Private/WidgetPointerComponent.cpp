@@ -50,4 +50,3 @@ void UWidgetPointerComponent::ReleaseWidget()
 {
 	player->widgetPointer_Left->ReleasePointerKey(EKeys::LeftMouseButton);
 }
-

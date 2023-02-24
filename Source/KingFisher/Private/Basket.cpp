@@ -58,7 +58,7 @@ void ABasket::Tick(float DeltaTime)
 
 	if (bOpen)
 	{
-		lidLoc = handLoc-player->rightHand->GetComponentLocation();
+		lidLoc = handLoc-player->leftHand->GetComponentLocation();
 		lidLocZ = FMath::Clamp(compScene->GetComponentRotation().Roll+lidLoc.Z, -40, 50);
 		compScene->SetRelativeRotation(FRotator(0, 0, lidLocZ));
 	}
@@ -106,11 +106,17 @@ void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 
 		if (OtherActor == bait)
 		{
-			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
-			gameMode = Cast<AFisherGameModeBase>(currMode);
+			if (bait->bitingfish != nullptr)
+			{
+				AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+				gameMode = Cast<AFisherGameModeBase>(currMode);
 
-			gameMode->AddScore(1);
-			GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+				gameMode->AddScore(1);
+				GetWorld()->SpawnActor<AScoreUIActor>(AScoreUIActor::StaticClass(), scorePos->GetComponentLocation(), scorePos->GetComponentRotation());
+				bait->bitingfish->Destroy();
+				bait->bitingfish=nullptr;
+				bait->Destroy();
+			}
 		}
 
 // 		AFish* fish = Cast<AFish>(OtherActor);
@@ -130,16 +136,16 @@ void ABasket::GetFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 
 void ABasket::LostFish(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor != nullptr)
-	{
-		ABait* bait = Cast<ABait>(OtherActor);
-
-		if (OtherActor == bait)
-		{
-			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
-			gameMode = Cast<AFisherGameModeBase>(currMode);
-
-			gameMode->AddScore(-1);
-		}
-	}
+// 	if (OtherActor != nullptr)
+// 	{
+// 		ABait* bait = Cast<ABait>(OtherActor);
+// 
+// 		if (OtherActor == bait)
+// 		{
+// 			AGameModeBase* currMode = GetWorld()->GetAuthGameMode();
+// 			gameMode = Cast<AFisherGameModeBase>(currMode);
+// 
+// 			gameMode->AddScore(-1);
+// 		}
+// 	}
 }

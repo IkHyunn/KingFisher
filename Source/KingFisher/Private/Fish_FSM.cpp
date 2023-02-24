@@ -116,7 +116,7 @@ void UFish_FSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		if (me->bBait && currState != EFishState::Die)
 		{
 		//매개변수 DeltaTime으로 속도 조절
-			BiteSystem(0.004);
+			BiteSystem(0.0005);
 	
 		}
 		// 미끼에 닿지 않았다면
@@ -326,8 +326,9 @@ void UFish_FSM::UpdateDie()
 	//물고기를 미끼에 붙인다.
 	if (IsValid(target))
 	{
-
 		me->AttachToComponent(target->baitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("Tale"));
+		// ***************************** IH
+		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		target->bBaitReady = false;
 	}
 	//머터리얼 색을 꺼라
@@ -486,7 +487,9 @@ void UFish_FSM::ChangeState(EFishState state)
 	case EFishState::Die:
 	{
 		//충돌 안되게
-		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//*******************************************IH
+		GetWorld()->GetFirstPlayerController()->PlayHapticEffect(me->catchVib, EControllerHand::Right, 1.0f, false);
 		// 죽음 몽타주 (랜덤 재생)
 		int32 rand = FMath::RandRange(0, 1);
 		FString sectionName = FString::Printf(TEXT("Die%d"), rand);

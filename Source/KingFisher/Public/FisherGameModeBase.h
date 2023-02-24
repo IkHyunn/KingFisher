@@ -22,7 +22,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite)
-	int32 minute = 1;
+	int32 minute = 5;
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 second = 0;

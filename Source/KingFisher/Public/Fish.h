@@ -104,4 +104,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class AFish* me;
 	
+	// ******************* IH
+	UPROPERTY(EditAnywhere)
+	class UHapticFeedbackEffect_Base* catchVib;
 };

@@ -119,10 +119,10 @@ void UGrabComponent::LeftGrabFish()
 //  
 //  	if (bHit && fish == nullptr)
 //  	{
-//  		fish = Cast<AFish>(hitinfo.GetActor());
-//  
 //  		if (hitinfo.GetActor()->GetName().Contains(TEXT("Fish")))
 //  		{
+// 			fish = Cast<AFish>(hitinfo.GetActor());
+// 			fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 //  			fish->AttachToComponent(player->leftHand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FishPos"));
 // 			fish->GetCapsuleComponent()->SetSimulatePhysics(false);
 //  		}
@@ -133,13 +133,13 @@ void UGrabComponent::LeftReleaseFish()
 {
 	leftanim->posePoint = 0;
 
-//  	if (fish != nullptr)
-//  	{
-//  		fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-//  		fish->GetCapsuleComponent()->SetSimulatePhysics(true);
-//  		fish->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-//  		fish = nullptr;
-//  	}
+ 	if (fish != nullptr)
+ 	{
+ 		fish->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+ 		fish->GetCapsuleComponent()->SetSimulatePhysics(true);
+ 		fish->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+ 		fish = nullptr;
+ 	}
 }
 
 void UGrabComponent::LeftThumbAction()
@@ -237,14 +237,7 @@ void UGrabComponent::RightGrabObject(USkeletalMeshComponent* hand)
 					rightgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("PaddlePos_R"));
 					rightgrabActor->brightPickUp = true;
 				}
-				else if (rightgrabActor->GetName().Contains(TEXT("Basket")))
-				{
-					basket = Cast<ABasket>(hitinfo.GetActor());
-					basket->player=player;
-					basket->bOpen = true;
-					basket->handLoc = player->rightHand->GetComponentLocation();
-					rightgrabActor->brightPickUp = true;
-				}
+
 //			}
 		}
 	}
@@ -281,13 +274,6 @@ void UGrabComponent::LeftGrabObject(USkeletalMeshComponent* hand)
 					leftgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
 					leftgrabActor->bleftPickUp = true;
 				}
-// 				else if (leftgrabActor->GetName().Contains(TEXT("Fish")))
-// 				{
-// 					UE_LOG(LogTemp, Warning, TEXT("Grab"))
-// 					fish = Cast<AFish>(hitinfo.GetActor());
-// 					leftgrabActor->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
-// 					leftgrabActor->bleftPickUp = true;
-// 				}
 				else if (leftgrabActor->GetName().Contains(TEXT("Feed")))
 				{
 					FActorSpawnParameters spawnParameters;
@@ -296,6 +282,14 @@ void UGrabComponent::LeftGrabObject(USkeletalMeshComponent* hand)
 					bait = GetWorld()->SpawnActor<ABait>(baitFactory, hand->GetComponentLocation(), hand->GetComponentRotation(),spawnParameters);
 					bait->AttachToComponent(hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BaitPos"));
 					bait->compBox->SetSimulatePhysics(false);
+					leftgrabActor->bleftPickUp = true;
+				}
+				else if (leftgrabActor->GetName().Contains(TEXT("Basket")))
+				{
+					basket = Cast<ABasket>(hitinfo.GetActor());
+					basket->player = player;
+					basket->bOpen = true;
+					basket->handLoc = player->leftHand->GetComponentLocation();
 					leftgrabActor->bleftPickUp = true;
 				}
 		//	}
@@ -338,12 +332,6 @@ void UGrabComponent::RightReleaseObject(USkeletalMeshComponent* hand, FVector to
 			fishingRod->fishingRodMesh->SetSimulatePhysics(true);
 			rightgrabActor->brightPickUp = false;
 		}
-
-		if (basket != nullptr)
-		{
-			basket->bOpen=false;
-			rightgrabActor->brightPickUp = false;
-		}
 	}
 	rightgrabActor = nullptr;
 //	fishingRod = nullptr;
@@ -367,6 +355,12 @@ void UGrabComponent::LeftReleaseObject(USkeletalMeshComponent* hand)
 			bait->compBox->SetSimulatePhysics(true);
 			leftgrabActor->bleftPickUp = false;
 			leftgrabActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		}
+
+		if (basket != nullptr)
+		{
+			basket->bOpen = false;
+			leftgrabActor->brightPickUp = false;
 		}
 	}
 	leftgrabActor = nullptr;

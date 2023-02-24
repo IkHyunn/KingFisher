@@ -13,6 +13,7 @@
 #include "Bait.h"
 #include "Materials//MaterialInterface.h"
 #include <Components/BoxComponent.h>
+#include <Haptics/HapticFeedbackEffect_Base.h>
 
 // Sets default values
 AFish::AFish()

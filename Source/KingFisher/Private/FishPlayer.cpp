@@ -366,17 +366,17 @@ void AFishPlayer::ThrowBait()
 		UGameplayStatics::PlaySound2D(GetWorld(), castSound);
 		bFishing = false;
 
-		if (bCatch)
-		{
-			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 100.0f;
-			FRotator trans = FRotator(0, GetActorRotation().Yaw, 0);
-			
-
-			// fish_UI widget을 스폰 (위치, 방향)
-			GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
-			bCatch = false;
-
-		}
+// 		if (bCatch)
+// 		{
+// 			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 500.0f;
+// 			FRotator trans = FRotator(0, GetActorRotation().Yaw*180, 0);
+// 			
+// 
+// 			// fish_UI widget을 스폰 (위치, 방향)
+// 			GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
+// 			bCatch = false;
+// 
+// 		}
 
 	}
 }
