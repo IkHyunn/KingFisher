@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "FishPlayer.h"
+#include "Sound/SoundBase.h"
 //#include "UObject/Class.h"
 //#include "AIModule/Classes/Navigation/PathFollowingComponent.h"
 
@@ -36,6 +37,14 @@ UFish_FSM::UFish_FSM()
 	{
 		EatMontage = tempMontage.Object;
 	}
+
+	//»ç¿îµå
+	ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_FishBite.FOL_FishBite'"));
+	if (tempSound.Succeeded())
+	{
+		fishSound = tempSound.Object;
+	}
+
 
 }
 
@@ -304,6 +313,9 @@ void UFish_FSM::UpdateDamaged()
 {
 
 	UE_LOG(LogTemp, Warning, TEXT("!!!!!! DAMAGE!!!!!!"));
+
+	UGameplayStatics::PlaySound2D(GetWorld(), fishSound);
+
 
 //  	currTime += GetWorld()->DeltaTimeSeconds;
 //  	if (currTime > EatDelayTime)

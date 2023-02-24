@@ -131,6 +131,20 @@ AFishPlayer::AFishPlayer()
 	{
 		castSound = tempcastingsound.Object;
 	}
+
+// 	ConstructorHelpers::FObjectFinder<UAudioComponent>tempreelsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_Reeling.FOL_Reeling'"));
+// 	if (tempreelsound.Succeeded())
+// 	{
+// 		reelingSound = tempreelsound.Object;
+// 	}
+
+	//물고기 사운드
+	ConstructorHelpers::FObjectFinder<USoundBase> tempcatchSound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/FOL_CatchFish_1.FOL_CatchFish_1'"));
+	if (tempcatchSound.Succeeded())
+	{
+		catchfishSound = tempcatchSound.Object;
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -366,17 +380,24 @@ void AFishPlayer::ThrowBait()
 		UGameplayStatics::PlaySound2D(GetWorld(), castSound);
 		bFishing = false;
 
-// 		if (bCatch)
-// 		{
-// 			FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 500.0f;
-// 			FRotator trans = FRotator(0, GetActorRotation().Yaw*180, 0);
-// 			
-// 
-// 			// fish_UI widget을 스폰 (위치, 방향)
-// 			GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
-// 			bCatch = false;
-// 
-// 		}
+		
+		// 물고기 사운드 및 UI
+		currTime += GetWorld()->DeltaTimeSeconds;
+
+		if (bCatch)
+		{
+			//UGameplayStatics::PlaySound2D(GetWorld(), catchfishSound);
+
+			if (currTime > 1.5)
+			{
+				FVector widgetLoc = GetActorLocation() + camera->GetForwardVector() * 100.0f;
+				FRotator trans = FRotator(0, GetActorRotation().Yaw + 180, 0);
+
+				GetWorld()->SpawnActor<AfishWidgetActor>(fish_Ui, widgetLoc, trans);
+				bCatch = false;
+
+			}
+		}
 
 	}
 }
