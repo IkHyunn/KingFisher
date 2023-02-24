@@ -58,6 +58,12 @@ AFishingRod::AFishingRod()
 	throwPos = CreateDefaultSubobject<USceneComponent>(TEXT("Throw Pos"));
 	throwPos->SetupAttachment(fishingRodMesh);
 	throwPos->SetRelativeRotation(FRotator(0, -90, 0));
+
+	ConstructorHelpers::FObjectFinder<USoundBase>tempsound(TEXT("/Script/Engine.SoundWave'/Game/Resources/Sound/UI_NegativeClick.UI_NegativeClick'"));
+	if (tempsound.Succeeded())
+	{
+		attachSound = tempsound.Object;
+	}
 }
 
 void AFishingRod::BeginPlay()
@@ -92,6 +98,7 @@ void AFishingRod::AttachBait(UPrimitiveComponent* OverlappedComponent, AActor* O
 		{
 			UE_LOG(LogTemp, Warning, TEXT("True"));
 			bait->AttachToComponent(bobberMesh,FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("baitSocket"));
+			UGameplayStatics::PlaySound2D(GetWorld(), attachSound);
 			bait->compBox->SetSimulatePhysics(false);
 			bait->bAttached = true;
 			baitAttached = true;

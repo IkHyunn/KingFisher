@@ -394,7 +394,7 @@ bool UFish_FSM::IsTargetTrace()
 		
 		if (HitActor)
 		{
-			DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
+			//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Green, true, 2.0f, 0, 2.0f);
 
 			return true;
 		}
