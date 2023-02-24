@@ -51,7 +51,6 @@ void ABait::Tick(float DeltaTime)
 	// 물고기 상호작용
 	if (bitingfish !=nullptr && bitingfish->bBait)
 	{
-
 		if (fish != bitingfish)
 		{
 			fish->fsm->UpdateReturnPos();
@@ -64,7 +63,8 @@ void ABait::Tick(float DeltaTime)
 		}
 
 		currenttime += DeltaTime;
-		if (currenttime > 1)
+
+		if (currenttime > 3)
 		{
 			
 			if (bitingfish->fsm->currHP > 0 )
@@ -76,8 +76,6 @@ void ABait::Tick(float DeltaTime)
 
 					currenttime = 0;
 				}
-				}
-
 			}
 			
 	}

@@ -161,7 +161,7 @@ void UFish_FSM::BiteSystem(float DeltaTime)
 			direction = -1;
 		}
 	
-		me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime/6));
+		me->SetActorLocation(FMath::Lerp(startLoc, endLoc, currentTime/10));
 
 	
 
