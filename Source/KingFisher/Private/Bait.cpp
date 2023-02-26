@@ -34,13 +34,13 @@ void ABait::NotifyActorBeginOverlap(AActor* OtherActor)
 	fish = Cast<AFish>(OtherActor);
 	if (fish != nullptr)
 	{
-		if(bitingfish == nullptr)
+		if (bitingfish == nullptr)
 		{
 			fish->bBait = true;
 			bitingfish = fish;
-	
+
 		}
-	
+
 	}
 }
 
@@ -49,7 +49,7 @@ void ABait::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 물고기 상호작용
-	if (bitingfish !=nullptr && bitingfish->bBait)
+	if (bitingfish != nullptr && bitingfish->bBait)
 	{
 		if (fish != bitingfish)
 		{
@@ -66,8 +66,8 @@ void ABait::Tick(float DeltaTime)
 
 		if (currenttime > 3)
 		{
-			
-			if (bitingfish->fsm->currHP > 0 )
+
+			if (bitingfish->fsm->currHP > 0)
 			{
 				if (bitingfish->fsm->currState == EFishState::Swim || bitingfish->fsm->currState == EFishState::FastSwim)
 				{
@@ -77,14 +77,15 @@ void ABait::Tick(float DeltaTime)
 					currenttime = 0;
 				}
 			}
-			
-	}
-	else 
-	{
-		
-		// 또 다른 if조건으로 바꿔준다.
-		bBaitReady = true;
-		fish = nullptr;
+
+		}
+		else
+		{
+
+			// 또 다른 if조건으로 바꿔준다.
+			bBaitReady = true;
+			fish = nullptr;
+		}
 	}
 }
 
